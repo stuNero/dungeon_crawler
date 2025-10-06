@@ -32,7 +32,7 @@ abstract class Entity
             {
                 Inventory[i] = item;
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine(item.Name + "put into inventory!");
+                Console.WriteLine(item.Name + " put into inventory!");
                 Console.ResetColor();
                 break;
             }
@@ -47,7 +47,7 @@ abstract class Entity
             txt += $"[{i}] '{items[i]}'\n";
         }
         txt += "________________ ";
-        string input = "";
+        string? input = "";
         while (input.ToLower() != "exit")
         {
             Console.Clear();
@@ -83,5 +83,9 @@ abstract class Entity
                 }
             }
         }
+    }
+    public virtual void TakeTurn(Entity opponent)
+    {
+        
     }
 }
