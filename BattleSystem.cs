@@ -2,18 +2,25 @@ namespace Game;
 
 class BattleSystem
 {
-    Player Player;
-    Enemy Enemy;
+    Entity Attacker;
+    Entity Defender;
     public int turns;
-    public bool BattleStarted;
-    public BattleSystem(Player player, Enemy enemy, bool battleStarted)
+    public BattleSystem(Entity attacker, Entity defender)
     {
-        Player = player;
-        Enemy = enemy;
-        BattleStarted = battleStarted;
+        Attacker = attacker;
+        Defender = defender;
+        
     }
-    public void Attack(Entity Attacker, Entity Defender)
+    public void InitiateBattle()
+    {
+
+    }
+    void AttackerTurn()
     {
         
+    }
+    void DefenderTurn()
+    {
+
     }
 }
