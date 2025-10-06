@@ -40,12 +40,15 @@ while (running)
                     break;
                 case 3:
                     Console.WriteLine(player1.CheckInventory());
+                    Console.ReadLine();
                     break;
                 case 4:
                     Console.WriteLine(player1.CheckEquipped());
+                    Console.ReadLine();
                     break;
                 case 5:
                     Console.WriteLine(player1.Info());
+                    Console.ReadLine();
                     break;
                 default:
                     Utility.Error("Something went wrong in sub-menu input");
