@@ -1,5 +1,4 @@
 ﻿using Game;
-Console.Clear();
 
 Item longsword = new Item("Longsword", "weapon");
 longsword.DefineItem(2);
@@ -15,12 +14,13 @@ Enemy goblin1 = new Enemy("Goblin Soldier", 5, 5, 2, 100, 1, 3, "Goblin", 5);
 bool running = true;
 while (running)
 {
+    Console.Clear();
     Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy", "Character", "Leave" });
     int.TryParse(Console.ReadLine(), out int input);
     switch (input)
     {
         case 1:
-            BattleSystem battle = new BattleSystem(player1, goblin1, true);
+            BattleSystem battle = new BattleSystem(player1, goblin1);
             break;
         case 2:
             Console.Clear();
@@ -56,12 +56,8 @@ while (running)
             }
             break;
         case 3:
-            Utility.Prompt("Are you sure?");
-            string quitInput = Console.ReadLine();
-            if (quitInput.ToLower() != "exit")
-            {
-                running = false;
-            }
+            string choice = Utility.Prompt("Are you sure?");
+            if (string.IsNullOrWhiteSpace(choice)) { break; }
 
             break;
         default:
