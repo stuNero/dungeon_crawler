@@ -79,10 +79,6 @@ class Player : Actor
                 {
                     AddItem(Equipped[i]);
                     Equipped[i] = item;
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine(item.Name + "equipped!");
-                    Console.ResetColor();
-                    Thread.Sleep(2000);
                     break;
                 }
                 else
@@ -91,6 +87,10 @@ class Player : Actor
                     break;
                 }
             }
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(item.Name + " equipped!");
+            Console.ResetColor();
+            Thread.Sleep(2000);
         }
         try
         {
