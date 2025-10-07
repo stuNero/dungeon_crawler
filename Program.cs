@@ -17,7 +17,7 @@ while (running)
 {
     string choice = "";
     Console.Clear();
-    Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy", "Character", "Leave" });
+    Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy WIP","Take Damage", "Character", "Leave" });
     int.TryParse(Console.ReadLine(), out int input);
     switch (input)
     {
@@ -26,24 +26,48 @@ while (running)
             break;
         case 2:
             Console.Clear();
+            bool check = false;
+            foreach (Item item in player1.Equipped)
+            {
+                if (item != null)
+                {
+                    if (item.Type == "weapon")
+                    {
+                        player1.Hp -= item.Dmg;
+                        check = true;
+                        Utility.Error($"Oof.. {player1.Name} stabbed himself with {item.Name}!\nHe took {item.Dmg} damage..");
+                        break;
+                    }
+                }
+            }
+            if (!check)
+            {
+                Utility.Error("No weapon selected");
+                break;
+            }
+            Utility.Prompt("");
+            break;
+        case 3:
+            Console.Clear();
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Equip Item", "Unequip item","Inventory", "Equipped","Check stats" });
-            int.TryParse(Console.ReadLine(), out input);
+            choice = Utility.Prompt("",clear:false);
+            if (string.IsNullOrWhiteSpace(choice)) { break; }
+            int.TryParse(choice, out input);
             switch (input)
             {
                 case 1:
-                    Console.Clear();
-                    Console.WriteLine(player1.CheckInventory());
-                    int.TryParse(Console.ReadLine(),out input);
+                    choice = Utility.Prompt(player1.CheckInventory());
+                    if (string.IsNullOrWhiteSpace(choice)) { break; }
+                    int.TryParse(choice,out input);
                     player1.EquipItem(player1.Inventory[input-1]);
                     break;
                 case 2:
-                    Console.Clear();
-                    Console.WriteLine(player1.CheckEquipped());
-                    int.TryParse(Console.ReadLine(),out input);
+                    choice = Utility.Prompt(player1.CheckEquipped());
+                    if (string.IsNullOrWhiteSpace(choice)) { break; }
+                    int.TryParse(choice,out input);
                     player1.UnEquipItem(player1.Equipped[input-1]);
                     break;
                 case 3:
-                    Console.Clear();
                     choice = Utility.Prompt(player1.CheckInventory());
                     if (string.IsNullOrWhiteSpace(choice)) { break; }
                     int.TryParse(choice, out int nr);
@@ -51,11 +75,9 @@ while (running)
                     Console.ReadLine();
                     break;
                 case 4:
-                    Console.Clear();
                     Utility.Prompt(player1.CheckEquipped());
                     break;
                 case 5:
-                    Console.Clear();
                     Utility.Prompt(player1.Info());
                     break;
                 default:
@@ -63,10 +85,9 @@ while (running)
                     break;
             }
             break;
-        case 3:
+        case 4:
             choice = Utility.Prompt("Are you sure?");
             if (string.IsNullOrWhiteSpace(choice)) { break; }
-
             break;
         default:
             Utility.Error("Something went wrong in menu input");
