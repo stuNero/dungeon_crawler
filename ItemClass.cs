@@ -16,6 +16,17 @@ class Item
         Name = name;
         Type = type;
     }
+    public string Info()
+    {
+        if (Type == "weapon")
+        {
+            return $"Name: [{Name}]\nDamage: [{Dmg}]";
+        }
+        else
+        {
+            return $"Name: [{Name}]\nHP: [{Value}]";
+        }
+    }
     public void DefineItem(int value)
     {
         switch (Type)
