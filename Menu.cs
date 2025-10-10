@@ -3,7 +3,17 @@ namespace Game;
 enum Menu
 {
     None,
-    Battle,
     Main,
+    Battle,
     Character,
+    Quit,
+}
+
+enum CharMenu
+{
+    None,
+    TakeDamage,
+    Inventory,
+    Equipped,
+    Stats,
 }
