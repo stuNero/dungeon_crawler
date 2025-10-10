@@ -64,28 +64,23 @@ class Player : Actor
     }
     public void UnEquipItem(Item item)
     {
-        try
+        for (int i = 0; i < Equipped.Length; i++)
         {
-            for (int i = 0; i < Equipped.Length; i++)
+            if (Equipped[i] == item)
             {
-                if (Equipped[i] == item)
+                AddItem(Equipped[i]);
+                Equipped[i] = null;
+                Utility.Success(item.Name + "unequipped!");
+                for (int j = 0; j < Inventory.Length; j++)
                 {
-                    AddItem(Equipped[i]);
-                    Equipped[i] = null;
-                    Utility.Success(item.Name + "unequipped!");
-                    for (int j = 0; j < Inventory.Length; j++)
+                    if (Inventory[i] == null)
                     {
-                        if (Inventory[i] == null)
-                        {
-                            Inventory[i] = item;
-                        }
+                        Inventory[i] = item;
                     }
-                    break;
                 }
+                break;
             }
         }
-        catch
-        { Utility.Error("Something went wrong with unequipping item"); }
     }
     public void EquipItem(Item item)
     {
@@ -114,30 +109,25 @@ class Player : Actor
             }
             Utility.Success(item.Name + " equipped!");
         }
-        try
+        switch (item.Type)
         {
-            switch (item.Type)
-            {
-                case "weapon":
-                    if (!item.Equipped)
-                    {
-                        Equip(item);
-                        item.Equipped = true;
-                        this.Dmg += item.Dmg;
-                    }
-                    break;
-                case "consumable":
-                    this.Hp += item.Value;
-                    if (this.Hp > this.MaxHP)
-                    {
-                        this.Hp = this.MaxHP;
-                    }
+            case "weapon":
+                if (!item.Equipped)
+                {
                     Equip(item);
-                    break;
-            }
+                    item.Equipped = true;
+                    this.Dmg += item.Dmg;
+                }
+                break;
+            case "consumable":
+                this.Hp += item.Value;
+                if (this.Hp > this.MaxHP)
+                {
+                    this.Hp = this.MaxHP;
+                }
+                Equip(item);
+                break;
         }
-        catch
-        { Utility.Error("Something went wrong with equipping item"); }
     }
     public override void TakeTurn(Entity opponent)
     {
