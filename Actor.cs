@@ -5,23 +5,20 @@ namespace Game;
 
 abstract class Actor : Entity
 {
-    public int MaxHP;
     public int Mp;
     public int Dmg;
     public int Xp;
     public int XpDrop;
     public int Level;
 
-    public Actor(string name, int hp, int mp, int dmg, int xp, int level, int inventorySize, int maxHP)
-            : base(name, hp, inventorySize)
+    public Actor(string name, int maxHP, int mp, int dmg, int xp, int level, int inventorySize)
+            : base(name, maxHP, inventorySize)
     {
-        MaxHP = maxHP;
         Mp = mp;
         Dmg = dmg;
         Xp = xp;
         XpDrop = Xp / 100;
         Level = level;
-        Alive = true;
     }
     public string Info()
     {

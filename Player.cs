@@ -3,8 +3,8 @@ namespace Game;
 class Player : Actor
 {
     public Item[] Equipped = new Item[3];
-    public Player(string name, int hp, int mp, int dmg, int xp, int level, int inventorySize, int maxHP)
-                : base(name, hp, mp, dmg, xp, level, inventorySize, maxHP)
+    public Player(string name, int maxHP, int mp, int dmg, int xp, int level, int inventorySize)
+                : base(name, maxHP, mp, dmg, xp, level, inventorySize)
     { }
     public string CheckInventory()
     {

@@ -8,12 +8,13 @@ abstract class Entity
     public string Name;
     public bool Alive;
     public int Hp;
+    public int MaxHP;
     public int InventorySize;
     public Item[] Inventory;
-    public Entity(string name, int hp, int inventorySize)
+    public Entity(string name, int maxHP, int inventorySize)
     {
         Name = name;
-        Hp = hp;
+        Hp = maxHP;
 
         InventorySize = inventorySize;
         Inventory = new Item[InventorySize];
@@ -80,6 +81,10 @@ abstract class Entity
                 }
             }
         }
+    }
+    public virtual void TakeDamage(int amount)
+    {
+        
     }
     public virtual void TakeTurn(Entity opponent)
     {

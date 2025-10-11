@@ -8,7 +8,7 @@ longsword.DefineItem(2);
 Item healthPotion = new Item("Health Potion", "consumable");
 healthPotion.DefineItem(3);
 
-Player player1 = new Player("Max", 20, 10, 2, 100, 1, 5, 20);
+Player player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:2, xp:100, level:1, inventorySize:5);
 player1.AddItem(longsword);
 player1.AddItem(healthPotion);
 
