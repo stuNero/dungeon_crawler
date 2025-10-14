@@ -482,3 +482,10 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Build and cache folders
+bin/
+obj/
+
+# VSCodeCounter
+.VSCodeCounter
