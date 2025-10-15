@@ -103,7 +103,7 @@ while (running)
 
                     choice = Utility.Prompt("Unequip?(y/n)", clear:false);
                     if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") { player1.UnEquipItem(player1.Inventory[nr-1]!); }
+                    if (choice == "y") { player1.UnEquipItem(player1.Equipped[nr-1]!); }
                     else { break; }
                     break;
                 case CharMenu.Stats:
