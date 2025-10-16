@@ -3,8 +3,8 @@ using System.Diagnostics;
 class Player : Actor
 {
     public Item?[] Equipped = new Item?[3];
-    public Player(string name, int maxHP, int mp, int dmg, int xp, int level, int inventorySize)
-                : base(name, maxHP, mp, dmg, xp, level, inventorySize)
+    public Player(string name, int maxHP, int mp, int dmg, int xp, int lvl, int inventorySize)
+                : base(name, maxHP, mp, dmg, xp, lvl, inventorySize)
     { }
     public string CheckInventory()
     {
@@ -80,12 +80,8 @@ class Player : Actor
         }
         if(item.Type == "weapon")
         {
-            if (item.Equipped)
-            {
-                UnEquip(item);
-                item.Equipped = false;
-                this.Dmg -= item.Dmg;
-            }
+            UnEquip(item);
+            this.Dmg -= item.Dmg;
         }
     }
     public void EquipItem(Item item)
@@ -101,37 +97,36 @@ class Player : Actor
                     break;
                 }
                 else if (Equipped[i] == null)
-                {   
+                {
                     Equipped[i] = item;
                     break;
                 }
             }
-            for (int i = 0; i<Inventory.Count(); i++)
+            for (int i = 0; i < Inventory.Count(); i++)
             {
                 if (Inventory[i] == item)
                 {
                     Inventory[i] = null;
                 }
             }
-            Utility.Success(item.Name + " equipped!");
         }
         switch (item.Type)
         {
             case "weapon":
-                if (!item.Equipped)
-                {
-                    Equip(item);
-                    item.Equipped = true;
-                    this.Dmg += item.Dmg;
-                }
+                Equip(item);
+                this.Dmg += item.Dmg;
+                Utility.Success(item.Name + " equipped!");
                 break;
             case "consumable":
+                Equip(item);
                 this.Hp += item.Value;
+                int restoredHP = item.Value;
                 if (this.Hp > this.MaxHP)
                 {
                     this.Hp = this.MaxHP;
+                    restoredHP = MaxHP - Hp;
                 }
-                Equip(item);
+                Utility.Success($"{this.Name} restored {restoredHP}!");
                 break;
         }
     }
