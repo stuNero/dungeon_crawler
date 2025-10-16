@@ -9,11 +9,11 @@ longsword.DefineItem(2);
 Item healthPotion = new Item("Health Potion", "consumable");
 healthPotion.DefineItem(3);
 
-Player player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:2, xp:100, level:1, inventorySize:5);
+Player player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:1, xp:100, lvl:1, inventorySize:5);
 player1.AddItem(longsword);
 player1.AddItem(healthPotion);
 
-Enemy goblin1 = new Enemy("Goblin Soldier", 5, 5, 2, 100, 1, 3, "Goblin");
+Enemy goblin1 = new Enemy(name:"Goblin Soldier", maxHP:5, mp:5, dmg:1, xp:100, lvl:1, 3, "Goblin");
 
 Menu currentMenu = Menu.Start;
 bool running = true;
@@ -85,26 +85,41 @@ while (running)
                     choice = Utility.Prompt(player1.CheckInventory());
                     if (string.IsNullOrWhiteSpace(choice)) { break; }
                     int.TryParse(choice, out int nr);
+                    if (!player1.Inventory.Contains(player1.Inventory[nr - 1]))
+                    { Utility.Error("No item selected!"); Console.ReadLine(); break; }
+                    if (player1.Inventory[nr - 1] != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(player1.Inventory[nr - 1]!.Info());
 
-                    Console.Clear();
-                    Console.WriteLine(player1.Inventory[nr - 1]!.Info());
-
-                    choice = Utility.Prompt("Equip?(y/n)", clear: false);
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") { player1.EquipItem(player1.Inventory[nr - 1]!); }
-                    else { break; }
+                        choice = Utility.Prompt("Equip?(y/n)", clear: false);
+                        if (string.IsNullOrWhiteSpace(choice)) { break; }
+                        if (choice == "y") { player1.EquipItem(player1.Inventory[nr - 1]!); }
+                        else { break; }
+                    }
+                    else
+                    {
+                        Utility.Error("No item selected!");
+                    }
                     break;
                 case CharMenu.Equipped:
                     choice = Utility.Prompt(player1.CheckEquipped());
                     if (string.IsNullOrWhiteSpace(choice)) { break; }
                     int.TryParse(choice, out nr);
-                    Console.Clear();
-                    Console.WriteLine(player1.Equipped[nr - 1]!.Info());
+                    if (player1.Equipped[nr - 1] != null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(player1.Equipped[nr - 1]!.Info());
 
-                    choice = Utility.Prompt("Unequip?(y/n)", clear:false);
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") { player1.UnEquipItem(player1.Equipped[nr-1]!); }
-                    else { break; }
+                        choice = Utility.Prompt("Unequip?(y/n)", clear: false);
+                        if (string.IsNullOrWhiteSpace(choice)) { break; }
+                        if (choice == "y") { player1.UnEquipItem(player1.Equipped[nr - 1]!); }
+                        else { break; }
+                    }
+                    else
+                    {
+                        Utility.Error("No item selected!"); 
+                    }
                     break;
                 case CharMenu.Stats:
                     Utility.Prompt(player1.Info());
