@@ -40,7 +40,7 @@ abstract class Utility
         Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.Write(input);
         Console.ResetColor();
-        return Console.ReadLine();
+        return Console.ReadLine()!;
     }
     /// <summary>
     /// Prints a colored Error message and an option to return to menu

@@ -6,7 +6,6 @@ class Item
     public string Type; 
     public int Dmg;
     public int Value;
-    public bool Equipped = false;
 
     public Item(string name, string type)
     {
@@ -20,11 +19,13 @@ class Item
     {
         if (Type == "weapon")
         {
-            return $"Name: [{Name}]\nDamage: [{Dmg}]";
+            return  $"Name:     [{Name}]\n"+
+                    $"Damage:   [{Dmg}]";
         }
         else
         {
-            return $"Name: [{Name}]\nHP: [{Value}]";
+            return  $"Name:     [{Name}]\n"+
+                    $"HP:       [{Value}]";
         }
     }
     public void DefineItem(int value)

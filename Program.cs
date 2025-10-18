@@ -1,39 +1,63 @@
 ﻿using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using Game;
 
-Item longsword = new Item("Longsword", "weapon");
-longsword.DefineItem(2);
-Item healthPotion = new Item("Health Potion", "consumable");
-healthPotion.DefineItem(3);
+Player? player1 = null;
+Enemy? goblin1 = null;
 
-Player player1 = new Player("Max", 20, 10, 2, 100, 1, 5, 20);
-player1.AddItem(longsword);
-player1.AddItem(healthPotion);
+Item? longsword = null;
+Item? healthPotion = null;
 
-Enemy goblin1 = new Enemy("Goblin Soldier", 5, 5, 2, 100, 1, 3, "Goblin", 5);
-
-Menu currentMenu = Menu.Main;
+Menu currentMenu = Menu.Start;
 bool running = true;
 while (running)
 {
-    string choice = "";
     Console.Clear();
+    string choice = "";
     switch (currentMenu)
     {
+        case Menu.Start:
+            longsword = new Item("Longsword", "weapon");
+            longsword.DefineItem(value:2);
+            healthPotion = new Item("Health Potion", "consumable");
+            healthPotion.DefineItem(value:3);
+
+            player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:1, xp:100, lvl:1, inventorySize:5);
+            player1.AddItem(longsword);
+            player1.AddItem(healthPotion);
+
+            goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 5, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
+            
+            Utility.GenerateMenu(title: "D U N G E O N  C R A W L E R", choices: new[] { "START", "QUIT" });
+            int.TryParse(Console.ReadLine(), out int input);
+            switch (input)
+            {
+                case 1:
+                    currentMenu = Menu.Main;
+                    break;
+                case 2:
+                    currentMenu = Menu.Quit;
+                    break;
+            }
+            break;
         case Menu.Main:
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy WIP", "Character", "Leave" });
-            int.TryParse(Console.ReadLine(), out int input);
+            int.TryParse(Console.ReadLine(), out input);
             switch (input)
             {
                 case 1: currentMenu = Menu.Battle;    break;
                 case 2: currentMenu = Menu.Character; break;
-                case 3: currentMenu = Menu.Quit;      break;
+                case 3:
+                    choice = Utility.Prompt("Are you sure?(y/n)");
+                    if(string.IsNullOrWhiteSpace(choice)) { break; }
+                    currentMenu = Menu.Start;      
+                    break;
             }
             break;
         case Menu.Battle:
-            BattleSystem battle = new BattleSystem(player1, goblin1);
+            // BattleSystem battle = new BattleSystem(player1, goblin1);
             currentMenu = Menu.Main;
             break;
         case Menu.Character:
@@ -54,46 +78,20 @@ while (running)
             {
                 case CharMenu.TakeDamage:
                     Console.Clear();
-                    bool check = false;
-                    foreach (Item item in player1.Equipped)
+                    player1.TakeDamage(player1.Dmg);
+                    Console.WriteLine(player1.Info());
+                    Utility.Error($"Oof.. {player1.Name} hit himself with {player1.Equipped.ElementAtOrDefault(0)?.Name ?? "his fist"}!\nHe took {player1.Dmg} damage..");
+                    if (!player1.Alive)
                     {
-                        if (item != null)
-                        {
-                            if (item.Type == "weapon")
-                            {
-                                player1.Hp -= player1.Dmg;
-                                check = true;
-                                Utility.Error($"Oof.. {player1.Name} stabbed himself with {item.Name}!\nHe took {player1.Dmg} damage..");
-                                break;
-                            }
-                        }
+                        Utility.Error("You died!");
+                        currentMenu = Menu.Start;
                     }
-                    if (!check)
-                    { Utility.Error("No weapon selected"); break; }
                     break;
                 case CharMenu.Inventory:
-                    choice = Utility.Prompt(player1.CheckInventory());
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    int.TryParse(choice, out int nr);
-                    Console.Clear();
-                    Console.WriteLine(player1.Inventory[nr - 1].Info());
-
-                    choice = Utility.Prompt("Equip?(y/n)", clear: false);
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") { player1.EquipItem(player1.Inventory[nr - 1]); }
-                    else { break; }
+                    player1.CheckInventory();
                     break;
                 case CharMenu.Equipped:
-                    choice = Utility.Prompt(player1.CheckEquipped());
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    int.TryParse(choice, out nr);
-                    Console.Clear();
-                    Console.WriteLine(player1.Equipped[nr - 1].Info());
-
-                    choice = Utility.Prompt("Unequip?(y/n)", clear:false);
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") { player1.EquipItem(player1.Inventory[nr - 1]); }
-                    else { break; }
+                    player1.CheckEquipped();
                     break;
                 case CharMenu.Stats:
                     Utility.Prompt(player1.Info());

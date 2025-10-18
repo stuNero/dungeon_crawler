@@ -486,3 +486,6 @@ $RECYCLE.BIN/
 # Build and cache folders
 bin/
 obj/
+
+# VSCodeCounter
+.VSCodeCounter

@@ -2,10 +2,11 @@ namespace Game;
 
 enum Menu
 {
-    None,
+    Start,
     Main,
     Battle,
     Character,
+    GameOver,
     Quit,
 }
 

@@ -1,5 +1,6 @@
 namespace Game;
 
+using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography;
 
@@ -8,20 +9,17 @@ abstract class Entity
     public string Name;
     public bool Alive;
     public int Hp;
+    public int MaxHP;
     public int InventorySize;
-    public Item[] Inventory;
-    public Entity(string name, int hp, int inventorySize)
+    public Item?[] Inventory;
+    public Entity(string name, int maxHP, int inventorySize)
     {
         Name = name;
-        Hp = hp;
-
+        Hp = maxHP;
+        MaxHP = maxHP;
+        Alive = true;
         InventorySize = inventorySize;
         Inventory = new Item[InventorySize];
-
-        if (Hp > 0)
-        { Alive = true; }
-        else
-        { Alive = false; }
     }
     public void AddItem(Item item)
     {
@@ -30,7 +28,8 @@ abstract class Entity
             if (Inventory[i] == null)
             {
                 Inventory[i] = item;
-                Utility.Success(item.Name + " put into inventory!", menuChoice:false);
+                Debug.Assert(Inventory[i] != null);
+                Utility.Success(Inventory[i]!.Name + " put into inventory!", menuChoice:false);
                 break;
             }
         }
@@ -45,7 +44,7 @@ abstract class Entity
         }
         txt += "________________ ";
         string? input = "";
-        while (input.ToLower() != "exit")
+        while (input!.ToLower() != "exit")
         {
             Console.Clear();
             Utility.Prompt(txt);
@@ -61,7 +60,7 @@ abstract class Entity
         {
             if (Inventory[i] != null)
             {
-                items.Add(Inventory[i]);
+                items.Add(Inventory[i]!);
                 Inventory[i] = null;
             }
         }
@@ -79,6 +78,14 @@ abstract class Entity
                     break;
                 }
             }
+        }
+    }
+    public virtual void TakeDamage(int amount)
+    {
+        this.Hp -= amount;
+        if (this.Hp <= 0)
+        {
+            this.Alive = false;
         }
     }
     public virtual void TakeTurn(Entity opponent)
