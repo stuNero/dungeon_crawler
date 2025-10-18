@@ -7,6 +7,7 @@ enum Menu
     Battle,
     Character,
     GameOver,
+    Creation,
     Quit,
 }
 
