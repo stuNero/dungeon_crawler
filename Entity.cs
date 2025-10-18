@@ -16,6 +16,7 @@ abstract class Entity
     {
         Name = name;
         Hp = maxHP;
+        MaxHP = maxHP;
         Alive = true;
         InventorySize = inventorySize;
         Inventory = new Item[InventorySize];
