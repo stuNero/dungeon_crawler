@@ -4,17 +4,15 @@ using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using Game;
 
+
+Player? player1 = null;
+Enemy? goblin1 = null;
 List<Item> items = new();
 items.Add(new Weapon("Longsword", 2, WeaponType.Sword));
 items.Add(new Weapon("Bearded Axe", 2, WeaponType.Axe));
 items.Add(new Weapon("Quillon Dagger", 2, WeaponType.Dagger));
 items.Add(new Weapon("Flanged Mace", 2, WeaponType.Mace));
 items.Add(new Consumable("Health Potion", 2));
-
-Player? player1 = null;
-Enemy? goblin1 = null;
-
-Consumable? healthPotion = null;
 
 Menu currentMenu = Menu.Start;
 bool running = true;
@@ -42,16 +40,28 @@ while (running)
         case Menu.Creation:
             player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:1, xp:100, lvl:1, inventorySize:5);
 
-            Utility.GenerateMenu(title: "Choose Your Starting Items");
-            // bool chooseItems = true;
-            // while (chooseItems)
-            for(int i = 0; i<items.Count;i++)
+            bool chooseItems = true;
+            while (chooseItems)
             {
-                Console.WriteLine($"[{i + 1}]");
-                Console.WriteLine(items[i].Info());
+                Utility.Narrate(text: "The hinges of the door creaks and you enter the room,\nyour torch light slowly " +
+                "illuminates an unlocked rusty, matte padlock..\n");
+                Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
+                "old oak chest which materializes from the black, seemingly infinite void room. ");
+                Utility.GenerateMenu(title: "Choose Your Starting Items");
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (!player1.Inventory.Contains(items[i]))
+                    {
+                        Console.WriteLine($"[{i + 1}]");
+                        Console.WriteLine(items[i].Info());
+                    }
+                }
+                choice = Utility.Prompt(">",clear:false);
+                if (string.IsNullOrWhiteSpace(choice)) { break; }
+                int.TryParse(choice, out input);
+                player1.AddItem(items[input-1]);
             }
-            Console.ReadLine();
-
+            currentMenu = Menu.Main;
             break;
         case Menu.Main:
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy WIP", "Character", "Leave" });
