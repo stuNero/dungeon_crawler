@@ -63,13 +63,17 @@ while (running)
                 }
                 choice = Utility.Prompt(">", clear: false);
                 if (string.IsNullOrWhiteSpace(choice)) { break; }
+                
                 int.TryParse(choice, out input);
-                if (!player1.InInventoryRange(input))
-                { break; }
+                if (!player1.InInventoryRange(input)) { break; }
+
                 player1.AddItem(items[input - 1]);
-                try{Console.Clear();} catch{}
+                try { Console.Clear(); } catch { }
             }
-            Utility.Narrate("You delve into the depths of the dungeon...");
+            if (narration)
+            {
+                Utility.Narrate("You delve into the depths of the dungeon...");
+            }
             currentMenu = Menu.Main;
             break;
         case Menu.Main:

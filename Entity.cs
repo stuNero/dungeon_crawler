@@ -107,7 +107,7 @@ abstract class Entity
             Utility.PrintColor(weapon.Name + " crit for " + (critDamage - dmg) + " damage!", ConsoleColor.DarkRed);
             dmg = critDamage;
         }
-        if (this is Player) {Utility.Error("You took " + dmg + " damage!");}
+        if (this is Player) {Utility.PrintColor("You took " + dmg + " damage!", ConsoleColor.DarkRed);}
         else { Utility.PrintColor(this.Name + " took " + dmg + " damage!", ConsoleColor.DarkGreen);}
         this.Hp -= dmg;
         if (this.Hp <= 0) {this.Alive = false;}
