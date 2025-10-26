@@ -16,20 +16,24 @@ items.Add(new Consumable("Health Potion", 2));
 
 Menu currentMenu = Menu.Start;
 bool running = true;
+bool narration = true;
 while (running)
 {
-    Console.Clear();
+    try{Console.Clear();} catch{}
     string choice = "";
     switch (currentMenu)
     {
         case Menu.Start:
-            goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 5, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
+            goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 5.0, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
             
             Utility.GenerateMenu(title: "D U N G E O N  C R A W L E R", choices: new[] { "START", "QUIT" });
             int.TryParse(Console.ReadLine(), out int input);
             switch (input)
             {
                 case 1:
+                    choice = Utility.Prompt("Skip narration?\n(Y/n)");
+                    if (string.IsNullOrWhiteSpace(choice)) { break; }
+                    if (choice == "y") {narration = false;}
                     currentMenu = Menu.Creation;
                     break;
                 case 2:
@@ -38,13 +42,15 @@ while (running)
             }
             break;
         case Menu.Creation:
-            player1 = new Player(name:"Max", maxHP:20, mp:10, dmg:1, xp:100, lvl:1, inventorySize:5);
-            Utility.Narrate(text: "The hinges of the door creaks and you enter the room,\nyour torch light slowly " +
-            "illuminates an unlocked rusty, matte padlock..\n");
-            Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
-            "old oak chest which materializes from the black, seemingly infinite void room. ");
-            int ctr = 0;
-            while (ctr < 3)
+            player1 = new Player(name: "Max", maxHP: 20.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 5);
+            if (narration)
+            {
+                Utility.Narrate(text: "The hinges of the door creaks and you enter the room,\nyour torch light slowly " +
+                "illuminates an unlocked rusty, matte padlock..\n");
+                Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
+                "old oak chest which materializes from the black, seemingly infinite void room. ");
+            }
+            while (player1.InventoryRange() < 3)
             {
                 Utility.GenerateMenu(title: "Choose Your Starting Items");
                 for (int i = 0; i < items.Count; i++)
@@ -58,9 +64,10 @@ while (running)
                 choice = Utility.Prompt(">", clear: false);
                 if (string.IsNullOrWhiteSpace(choice)) { break; }
                 int.TryParse(choice, out input);
+                if (!player1.InInventoryRange(input))
+                { break; }
                 player1.AddItem(items[input - 1]);
-                ctr++;
-
+                try{Console.Clear();} catch{}
             }
             Utility.Narrate("You delve into the depths of the dungeon...");
             currentMenu = Menu.Main;
@@ -85,7 +92,7 @@ while (running)
             break;
         case Menu.Character:
             CharMenu charMenu = CharMenu.None;
-            Console.Clear();
+            try{Console.Clear();} catch{}
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Take Damage DEBUG","Inventory", "Equipped","Stats" });
             choice = Utility.Prompt("",clear:false);
             if (string.IsNullOrWhiteSpace(choice)) { currentMenu = Menu.Main;  break; }
@@ -100,15 +107,18 @@ while (running)
             switch (charMenu)
             {
                 case CharMenu.TakeDamage:
-                    Console.Clear();
-                    player1!.TakeDamage(player1.Dmg);
+                    try { Console.Clear(); } catch { }
+                    if (player1!.Equipped[0] is Weapon w)
+                    {
+                        player1!.TakeDamage(w);
+                    }
                     Console.WriteLine(player1.Info());
-                    Utility.Error($"Oof.. {player1.Name} hit himself with {player1.Equipped.ElementAtOrDefault(0)?.Name ?? "his fist"}!\nHe took {player1.Dmg} damage..");
                     if (!player1.Alive)
                     {
-                        Utility.Error("You died!");
+                        Utility.PrintColor("You died!", ConsoleColor.DarkRed);
                         currentMenu = Menu.Start;
                     }
+                    Console.ReadKey(true);
                     break;
                 case CharMenu.Inventory:
                     player1!.CheckInventory();

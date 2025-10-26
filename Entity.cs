@@ -8,11 +8,11 @@ abstract class Entity
 {
     public string Name;
     public bool Alive;
-    public int Hp;
-    public int MaxHP;
+    public double Hp;
+    public double MaxHP;
     public int InventorySize;
     public Item?[] Inventory;
-    public Entity(string name, int maxHP, int inventorySize)
+    public Entity(string name, double maxHP, int inventorySize)
     {
         Name = name;
         Hp = maxHP;
@@ -20,6 +20,22 @@ abstract class Entity
         Alive = true;
         InventorySize = inventorySize;
         Inventory = new Item[InventorySize];
+    }
+    public int InventoryRange()
+    {
+        int amount = 0;
+        for(int i = 0; i<Inventory.Length;++i)
+        {
+            if (Inventory[i] != null)
+            {
+                amount += 1;
+            }
+        }
+        return amount;
+    }
+    public bool InInventoryRange(int input)
+    {
+        return input > 0 && input <= InventorySize;
     }
     public void AddItem(Item item)
     {
@@ -45,7 +61,7 @@ abstract class Entity
         string? input = "";
         while (input!.ToLower() != "exit")
         {
-            Console.Clear();
+            try{Console.Clear();} catch{}
             Utility.Prompt(txt);
             input = Console.ReadLine();
             int.TryParse(input, out int output);
@@ -79,13 +95,22 @@ abstract class Entity
             }
         }
     }
-    public virtual void TakeDamage(int amount)
+    public virtual void TakeDamage(Weapon weapon)
     {
-        this.Hp -= amount;
-        if (this.Hp <= 0)
+        bool crit = false;
+        double dmg = weapon.Value;
+        crit = weapon.CritCheck();
+        double critDamage = 0;
+        if (crit)
         {
-            this.Alive = false;
+            critDamage = weapon.Crit();
+            Utility.PrintColor(weapon.Name + " crit for " + (critDamage - dmg) + " damage!", ConsoleColor.DarkRed);
+            dmg = critDamage;
         }
+        if (this is Player) {Utility.Error("You took " + dmg + " damage!");}
+        else { Utility.PrintColor(this.Name + " took " + dmg + " damage!", ConsoleColor.DarkGreen);}
+        this.Hp -= dmg;
+        if (this.Hp <= 0) {this.Alive = false;}
     }
     public virtual void TakeTurn(Entity opponent)
     {
