@@ -6,12 +6,12 @@ namespace Game;
 abstract class Actor : Entity
 {
     public int Mp;
-    public int Dmg;
+    public double Dmg;
     public int Xp;
     public int XpDrop;
     public int Lvl;
 
-    public Actor(string name, int maxHP, int mp, int dmg, int xp, int lvl, int inventorySize)
+    public Actor(string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
             : base(name, maxHP, inventorySize)
     {
         Mp = mp;
