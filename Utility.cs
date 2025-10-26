@@ -34,7 +34,7 @@ abstract class Utility
     public static string Prompt(string input, bool clear = true)
     {
         if (clear)
-        { Console.Clear(); }
+        { try{Console.Clear();} catch{} }
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine("\n(Empty line and 'ENTER' to cancel..)");
         Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -53,15 +53,15 @@ abstract class Utility
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.Write("'ENTER' to return to menu...");
         Console.ResetColor();
-        Console.ReadLine();
-        Console.Clear();
+        Console.ReadKey(true);
+        try{Console.Clear();} catch{}
     }
     /// <summary>
     /// Prints a colored Success message with a bool option for returning to menu
     /// </summary>
     /// <param name="msg">Specific Success message</param>
     /// <param name="menuChoice">boolean option to include menu message</param>
-    public static void Success(string msg, bool menuChoice = true)
+    public static void Success(string msg, bool menuChoice = false)
     {
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine(msg);
@@ -69,10 +69,16 @@ abstract class Utility
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("'ENTER' to return to menu...");
-            Console.ReadLine();
+            Console.ReadKey(true);
         }
         Console.ResetColor();
-        Console.Clear();
+        try { Console.Clear(); } catch { }
+    }
+    public static void PrintColor(string msg, ConsoleColor consoleColor)
+    {
+        Console.ForegroundColor = consoleColor;
+        Console.WriteLine(msg);
+        Console.ResetColor();
     }
     public static void Narrate(string text, ConsoleColor color = ConsoleColor.DarkYellow, bool slow = true, int charDelayMs = 30, bool waitForKey = true)
     {
@@ -102,7 +108,7 @@ abstract class Utility
             Console.WriteLine("Press any key to continue...");
             Console.ResetColor();
             Console.ReadKey(true);
-            Console.Clear();
+            try{Console.Clear();} catch{}
         }
     }
 }
