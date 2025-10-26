@@ -29,7 +29,6 @@ abstract class Entity
             {
                 Inventory[i] = item;
                 Debug.Assert(Inventory[i] != null);
-                Utility.Success(Inventory[i]!.Name + " put into inventory!", menuChoice:false);
                 break;
             }
         }
