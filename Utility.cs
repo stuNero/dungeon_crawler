@@ -9,7 +9,7 @@ abstract class Utility
     /// </summary>
     /// <param name="title">string value with a default state to be the title in a menu</param>
     /// <param name="choices">string array with params keyword for inputting infinite menu options </param>
-    public static void GenerateMenu(string title = "Choose a Menu Option:", params string[]choices)
+    public static void GenerateMenu(string title = "Choose a Menu Option:", params string[] choices)
     {
         string msg = "_______________________________\n";
         msg += title + "\n";
@@ -45,7 +45,7 @@ abstract class Utility
     public static ConsoleKeyInfo PromptKey(string input = "", bool clear = true)
     {
         if (clear)
-        { try{Console.Clear();} catch{} }
+        { try { Console.Clear(); } catch { } }
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine("\n(Empty line and 'ENTER' to cancel..)");
         Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -65,7 +65,7 @@ abstract class Utility
         Console.Write("'ENTER' to return to menu...");
         Console.ResetColor();
         Console.ReadKey(true);
-        try{Console.Clear();} catch{}
+        try { Console.Clear(); } catch { }
     }
     /// <summary>
     /// Prints a colored Success message with a bool option for returning to menu
@@ -119,7 +119,26 @@ abstract class Utility
             Console.WriteLine("Press any key to continue...");
             Console.ResetColor();
             Console.ReadKey(true);
-            try{Console.Clear();} catch{}
+            try { Console.Clear(); } catch { }
         }
+    }
+    public static void GenerateMenuActions(int selectedIndex, string[] menuOptions)
+    {
+        for (int i = 0; i<menuOptions.Length; ++i)
+        {
+            if (i == selectedIndex)
+            {
+                Console.BackgroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"    {menuOptions[i]}");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.WriteLine($"{menuOptions[i]}");
+            }
+        }
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("\n(Press 'ESC' to return to previous menu..)");
+        Console.ResetColor();
     }
 }
