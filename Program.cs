@@ -15,6 +15,7 @@ items.Add(new Weapon("Flanged Mace", 2, WeaponType.Mace));
 items.Add(new Consumable("Health Potion", 2));
 
 Menu currentMenu = Menu.Start;
+int input = 0;
 bool running = true;
 bool narration = true;
 while (running)
@@ -24,19 +25,20 @@ while (running)
     switch (currentMenu)
     {
         case Menu.Start:
+            ConsoleKeyInfo keyInput;
             goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 5.0, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
             
             Utility.GenerateMenu(title: "D U N G E O N  C R A W L E R", choices: new[] { "START", "QUIT" });
-            int.TryParse(Console.ReadLine(), out int input);
-            switch (input)
+            keyInput = Console.ReadKey();
+            switch (keyInput.Key)
             {
-                case 1:
-                    choice = Utility.Prompt("Skip narration?\n(Y/n)");
-                    if (string.IsNullOrWhiteSpace(choice)) { break; }
-                    if (choice == "y") {narration = false;}
+                case ConsoleKey.D1:
+                    keyInput = Utility.PromptKey("Skip narration?\n(Y/n)");
+                    if (keyInput.Key == ConsoleKey.Enter) { break; }
+                    else if (keyInput.Key == ConsoleKey.Y){narration = false;}
                     currentMenu = Menu.Creation;
                     break;
-                case 2:
+                case ConsoleKey.D2:
                     currentMenu = Menu.Quit;
                     break;
             }
@@ -52,7 +54,8 @@ while (running)
             }
             while (player1.InventoryRange() < 3)
             {
-                Utility.GenerateMenu(title: "Choose Your Starting Items");
+                player1.CheckInventory();
+                Utility.GenerateMenu(title: "\nChoose Your Starting Items");
                 for (int i = 0; i < items.Count; i++)
                 {
                     if (!player1.Inventory.Contains(items[i]))
@@ -78,44 +81,42 @@ while (running)
             break;
         case Menu.Main:
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Attack enemy WIP", "Character", "Leave" });
-            int.TryParse(Console.ReadLine(), out input);
-            switch (input)
+            keyInput = Console.ReadKey();
+            switch (keyInput.Key)
             {
-                case 1: currentMenu = Menu.Battle;    break;
-                case 2: currentMenu = Menu.Character; break;
-                case 3:
-                    choice = Utility.Prompt("Are you sure?(y/n)");
-                    if(string.IsNullOrWhiteSpace(choice)) { break; }
-                    currentMenu = Menu.Start;      
+                case ConsoleKey.D1: currentMenu = Menu.Battle;    break;
+                case ConsoleKey.D2: currentMenu = Menu.Character; break;
+                case ConsoleKey.D3:
+                    keyInput = Utility.PromptKey("Are you sure?(Y/n)");
+                    if      (keyInput.Key == ConsoleKey.Enter) { break; }
+                    else if (keyInput.Key == ConsoleKey.Y) { currentMenu = Menu.Start; }
                     break;
             }
             break;
         case Menu.Battle:
-            // BattleSystem battle = new BattleSystem(player1, goblin1);
+            Console.WriteLine("W I P");
+            Console.ReadKey(true);
             currentMenu = Menu.Main;
             break;
         case Menu.Character:
             CharMenu charMenu = CharMenu.None;
             try{Console.Clear();} catch{}
             Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Take Damage DEBUG","Inventory", "Equipped","Stats" });
-            choice = Utility.Prompt("",clear:false);
-            if (string.IsNullOrWhiteSpace(choice)) { currentMenu = Menu.Main;  break; }
-            int.TryParse(choice, out input);
-            switch (input)
+            keyInput = Utility.PromptKey("",clear:false);
+            if (keyInput.Key == ConsoleKey.Enter) { currentMenu = Menu.Main;  break; }
+            switch (keyInput.Key)
             {
-                case 1: charMenu = CharMenu.TakeDamage; break;
-                case 2: charMenu = CharMenu.Inventory;  break;
-                case 3: charMenu = CharMenu.Equipped;   break;
-                case 4: charMenu = CharMenu.Stats;      break;
+                case ConsoleKey.D1: charMenu = CharMenu.TakeDamage; break;
+                case ConsoleKey.D2: charMenu = CharMenu.Inventory;  break;
+                case ConsoleKey.D3: charMenu = CharMenu.Equipped;   break;
+                case ConsoleKey.D4: charMenu = CharMenu.Stats;      break;
             }
             switch (charMenu)
             {
                 case CharMenu.TakeDamage:
                     try { Console.Clear(); } catch { }
                     if (player1!.Equipped[0] is Weapon w)
-                    {
-                        player1!.TakeDamage(w);
-                    }
+                    { player1!.TakeDamage(w); }
                     Console.WriteLine(player1.Info());
                     if (!player1.Alive)
                     {
@@ -124,25 +125,16 @@ while (running)
                     }
                     Console.ReadKey(true);
                     break;
-                case CharMenu.Inventory:
-                    player1!.CheckInventory();
-                    break;
-                case CharMenu.Equipped:
-                    player1!.CheckEquipped();
-                    break;
-                case CharMenu.Stats:
-                    Utility.Prompt(player1!.Info());
-                    break;
-                default:
-                    Utility.Error("Something went wrong in sub-menu input");
-                    break;
+                case CharMenu.Inventory: player1!.CheckInventory(equip:true); break;
+                case CharMenu.Equipped: player1!.CheckEquipped(); break;
+                case CharMenu.Stats: Utility.Prompt(player1!.Info()); break;
+                default: break;
             }
             break;
         case Menu.Quit:
-            choice = Utility.Prompt("Are you sure?");
-            if (string.IsNullOrWhiteSpace(choice)) { break; }else { Environment.Exit(0); }
-
+            keyInput = Utility.PromptKey("Are you sure?");
+            if (keyInput.Key == ConsoleKey.Enter) { break; }else if (keyInput.Key == ConsoleKey.Y){ Environment.Exit(0); }
             break;
-        default:Utility.Error("Something went wrong in menu input"); break;
+        default: break;
     }
 }
