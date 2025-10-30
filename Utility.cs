@@ -42,7 +42,7 @@ abstract class Utility
         Console.ResetColor();
         return Console.ReadLine()!;
     }
-    public static ConsoleKeyInfo PromptKey(string input, bool clear = true)
+    public static ConsoleKeyInfo PromptKey(string input = "", bool clear = true)
     {
         if (clear)
         { try{Console.Clear();} catch{} }
