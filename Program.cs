@@ -24,25 +24,47 @@ while (running)
     switch (currentMenu)
     {
         case Menu.Start:
+            subRunning = true;
             ConsoleKeyInfo keyInput;
             goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 5.0, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
-            
-            Utility.GenerateMenu(title: "D U N G E O N  C R A W L E R", choices: new[] { "START", "QUIT" });
-            keyInput = Console.ReadKey();
-            switch (keyInput.Key)
+            string[] startOptions = ["START", "QUIT"];
+
+            int selectedIndex1 = 0;
+            Dictionary<string, Menu> startMenuOptions = new Dictionary<string, Menu>();
+            startMenuOptions.Add(startOptions[0], Menu.Creation);
+            startMenuOptions.Add(startOptions[1], Menu.Quit);
+
+            while (subRunning)
             {
-                case ConsoleKey.D1:
-                    keyInput = Utility.PromptKey("Skip narration?\n(Y/n)");
-                    if (keyInput.Key == ConsoleKey.Enter) { break; }
-                    else if (keyInput.Key == ConsoleKey.Y){narration = false;}
-                    currentMenu = Menu.Creation;
-                    break;
-                case ConsoleKey.D2:
-                    currentMenu = Menu.Quit;
-                    break;
+                Console.Clear();
+                Utility.GenerateMenu(title:"D U N G E O N  C R A W L E R");
+                Utility.GenerateMenuActions(selectedIndex1, startOptions);
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedIndex1--;
+                        if (selectedIndex1 < 0)
+                            selectedIndex1 = startOptions.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedIndex1++;
+                        if (selectedIndex1 >= startOptions.Length)
+                            selectedIndex1 = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        Console.Clear();
+                        currentMenu = startMenuOptions[startOptions[selectedIndex1]];
+                        subRunning = false;
+                        break;
+                }
             }
             break;
         case Menu.Creation:
+            List<Item> tempItems = items;
+            keyInput = Utility.PromptKey("Skip narration?\n(Y/n)");
+            if (keyInput.Key == ConsoleKey.Enter) { break; }
+            else if (keyInput.Key == ConsoleKey.Y) { narration = false; }
+            
             player1 = new Player(name: "Max", maxHP: 20.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 5);
             if (narration)
             {
@@ -58,12 +80,9 @@ while (running)
                 while (subRunning)
                 {
                     List<string> itemList = new();
-                    foreach (Item item in items)
+                    foreach (Item item in tempItems)
                     {
-                        if (!player1.Inventory.Contains(item))
-                        {
-                            itemList.Add(item.Info());
-                        }
+                        itemList.Add(item.Info());
                     }
                     string[] itemArray = itemList.ToArray();
                     try {Console.Clear();} catch {}
@@ -86,28 +105,13 @@ while (running)
                             Console.Clear();
                             subRunning = false;
                             player1.AddItem(items[selectedItemIndex]);
+                            tempItems.Remove(items[selectedItemIndex]);
                             break;
                         case ConsoleKey.Escape:
                             currentMenu = Menu.Main;
                             break;
                     }
                 }
-                // for (int i = 0; i < items.Count; i++)
-                // {
-                //     if (!player1.Inventory.Contains(items[i]))
-                //     {
-                //         Console.WriteLine($"[{i + 1}]");
-                //         Console.WriteLine(items[i].Info());
-                //     }
-                // }
-                // choice = Utility.Prompt(">", clear: false);
-                // if (string.IsNullOrWhiteSpace(choice)) { break; }
-                
-                // int.TryParse(choice, out input);
-                // if (!player1.InInventoryRange(input)) { break; }
-
-                // player1.AddItem(items[input - 1]);
-                // try { Console.Clear(); } catch { }
             }
             if (narration)
             {
@@ -143,9 +147,9 @@ while (running)
                         currentMenu = menuOptions[mainOptions[selectedIndex]];
                         break;
                     case ConsoleKey.Escape:
-                        keyInput = Utility.PromptKey("Are you sure?(Y/n)");
-                        if      (keyInput.Key != ConsoleKey.Y)  { }
-                        else if (keyInput.Key == ConsoleKey.Y)  { currentMenu = Menu.Start; subRunning = false; }
+                        string input = Utility.Prompt("Are you sure?(Y/n)");
+                        if (input.ToLower() == "y")  
+                        { currentMenu = Menu.Start; subRunning = false; }
                         break;
                 }
             }
