@@ -36,7 +36,7 @@ while (running)
 
             while (subRunning)
             {
-                Console.Clear();
+                try {Console.Clear();} catch{}
                 Utility.GenerateMenu(title:"D U N G E O N  C R A W L E R");
                 Utility.GenerateMenuActions(selectedIndex1, startOptions);
                 switch (Console.ReadKey().Key)
@@ -60,7 +60,10 @@ while (running)
             }
             break;
         case Menu.Creation:
-            List<Item> tempItems = items;
+            List<Item> tempItems = new();
+            foreach (Item item1 in items)
+            { tempItems.Add(item1); }
+
             keyInput = Utility.PromptKey("Skip narration?\n(Y/n)");
             if (keyInput.Key == ConsoleKey.Enter) { break; }
             else if (keyInput.Key == ConsoleKey.Y) { narration = false; }
@@ -86,7 +89,7 @@ while (running)
                     }
                     string[] itemArray = itemList.ToArray();
                     try {Console.Clear();} catch {}
-                    Utility.GenerateMenu(title: "\nChoose Your Starting Items");
+                    Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({player1.InventoryRange()})");
                     Utility.GenerateMenuActions(selectedItemIndex, itemArray);
                     player1.CheckInventory();
                     switch (Console.ReadKey().Key)
@@ -104,11 +107,11 @@ while (running)
                         case ConsoleKey.Enter:
                             Console.Clear();
                             subRunning = false;
-                            player1.AddItem(items[selectedItemIndex]);
-                            tempItems.Remove(items[selectedItemIndex]);
+                            player1.AddItem(tempItems[selectedItemIndex]);
+                            tempItems.Remove(tempItems[selectedItemIndex]);
                             break;
                         case ConsoleKey.Escape:
-                            currentMenu = Menu.Main;
+                            subRunning = false;
                             break;
                     }
                 }
