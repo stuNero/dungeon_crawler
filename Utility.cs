@@ -134,7 +134,9 @@ abstract class Utility
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"{menuOptions[i]}");
+                Console.ResetColor();
             }
         }
         Console.ForegroundColor = ConsoleColor.DarkGray;
