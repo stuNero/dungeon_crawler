@@ -60,15 +60,15 @@ while (running)
             }
             break;
         case Menu.Creation:
+            subRunning = true;
+            player1 = new Player(name: "Max", maxHP: 20.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 5);
             List<Item> tempItems = new();
-            foreach (Item item1 in items)
-            { tempItems.Add(item1); }
+            foreach (Item item1 in items) { tempItems.Add(item1); }
 
             keyInput = Utility.PromptKey("Skip narration?\n(Y/n)");
             if (keyInput.Key == ConsoleKey.Enter) { break; }
             else if (keyInput.Key == ConsoleKey.Y) { narration = false; }
             
-            player1 = new Player(name: "Max", maxHP: 20.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 5);
             if (narration)
             {
                 Utility.Narrate(text: "The hinges of the door creaks and you enter the room,\nyour torch light slowly " +
@@ -76,51 +76,45 @@ while (running)
                 Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
                 "old oak chest which materializes from the black, seemingly infinite void room. ");
             }
-            while (player1.InventoryRange() < 3)
+            int selectedItemIndex = 0;
+            while (player1.InventoryRange() < 3 && subRunning)
             {
-                subRunning = true;
-                int selectedItemIndex = 0;
-                while (subRunning)
+                List<string> itemList = new();
+                // Print available items
+                foreach (Item item in tempItems)
+                { itemList.Add(item.Info()); }
+
+                string[] itemArray = itemList.ToArray();
+                try { Console.Clear(); } catch { }
+                Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({3 - player1.InventoryRange()})");
+                Utility.GenerateMenuActions(selectedItemIndex, itemArray);
+                player1.CheckInventory();
+                switch (Console.ReadKey().Key)
                 {
-                    List<string> itemList = new();
-                    foreach (Item item in tempItems)
-                    {
-                        itemList.Add(item.Info());
-                    }
-                    string[] itemArray = itemList.ToArray();
-                    try {Console.Clear();} catch {}
-                    Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({player1.InventoryRange()})");
-                    Utility.GenerateMenuActions(selectedItemIndex, itemArray);
-                    player1.CheckInventory();
-                    switch (Console.ReadKey().Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            selectedItemIndex--;
-                            if (selectedItemIndex < 0)
-                                selectedItemIndex = itemArray.Length - 1;
-                            break;
-                        case ConsoleKey.DownArrow:
-                            selectedItemIndex++;
-                            if (selectedItemIndex >= itemArray.Length)
-                                selectedItemIndex = 0;
-                            break;
-                        case ConsoleKey.Enter:
-                            Console.Clear();
-                            subRunning = false;
-                            player1.AddItem(tempItems[selectedItemIndex]);
-                            tempItems.Remove(tempItems[selectedItemIndex]);
-                            break;
-                        case ConsoleKey.Escape:
-                            subRunning = false;
-                            break;
-                    }
+                    case ConsoleKey.UpArrow:
+                        selectedItemIndex--;
+                        if (selectedItemIndex < 0)
+                            selectedItemIndex = itemArray.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedItemIndex++;
+                        if (selectedItemIndex > itemArray.Length)
+                            selectedItemIndex = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        player1.AddItem(tempItems[selectedItemIndex]);
+                        tempItems.Remove(tempItems[selectedItemIndex]);
+                        break;
+                    case ConsoleKey.Escape:
+                        subRunning = false;
+                        break;
                 }
             }
-            if (narration)
-            {
-                Utility.Narrate("You delve into the depths of the dungeon...");
-            }
+            Console.Clear();
+            player1.CheckInventory();
+            Utility.PromptKey("Press ANY KEY to continue..", clear:false);
             currentMenu = Menu.Main;
+            if (narration) Utility.Narrate("You delve into the depths of the dungeon...");
             break;
         case Menu.Main:
             subRunning = true;
@@ -131,7 +125,8 @@ while (running)
             menuOptions.Add(mainOptions[1], Menu.Character);
             while (subRunning)
             {
-                Console.Clear();
+                try {Console.Clear();} catch{}
+                Utility.GenerateMenu(title: "MAIN MENU");
                 Utility.GenerateMenuActions(selectedIndex, mainOptions);
                 switch (Console.ReadKey().Key)
                 {
@@ -142,7 +137,7 @@ while (running)
                         break;
                     case ConsoleKey.DownArrow:
                         selectedIndex++;
-                        if (selectedIndex >= mainOptions.Length)
+                        if (selectedIndex > mainOptions.Length)
                             selectedIndex = 0;
                         break;
                     case ConsoleKey.Enter:
@@ -163,17 +158,44 @@ while (running)
             currentMenu = Menu.Main;
             break;
         case Menu.Character:
+            selectedIndex = 0;
+            subRunning = true;
             CharMenu charMenu = CharMenu.None;
-            try{Console.Clear();} catch{}
-            Utility.GenerateMenu(title: "Choose an option: ", choices: new[] { "Take Damage DEBUG","Inventory", "Equipped","Stats" });
-            keyInput = Utility.PromptKey("",clear:false);
-            if (keyInput.Key == ConsoleKey.Enter) { currentMenu = Menu.Main;  break; }
-            switch (keyInput.Key)
+            try { Console.Clear(); } catch { }
+
+            string[] charOptions = ["Take Damage DEBUG", "Inventory", "Equipped", "Stats"];
+            Dictionary<string, CharMenu> charDict = new();
+            charDict.Add(charOptions[0], CharMenu.TakeDamage);
+            charDict.Add(charOptions[1], CharMenu.Inventory);
+            charDict.Add(charOptions[2], CharMenu.Equipped);
+            charDict.Add(charOptions[3], CharMenu.Stats);
+            while(subRunning)
             {
-                case ConsoleKey.D1: charMenu = CharMenu.TakeDamage; break;
-                case ConsoleKey.D2: charMenu = CharMenu.Inventory;  break;
-                case ConsoleKey.D3: charMenu = CharMenu.Equipped;   break;
-                case ConsoleKey.D4: charMenu = CharMenu.Stats;      break;
+                Console.Clear(); 
+                Utility.GenerateMenu("CHARACTER MENU");
+                Utility.GenerateMenuActions(selectedIndex, charOptions);
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedIndex--;
+                        if (selectedIndex < 0)
+                            selectedIndex = charOptions.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedIndex++;
+                        if (selectedIndex > charOptions.Length)
+                            selectedIndex = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        charMenu = charDict[charOptions[selectedIndex]];
+                        subRunning = false;
+                        break;
+                    case ConsoleKey.Escape:
+                        subRunning = false;
+                        charMenu = CharMenu.None;
+                        break;
+                }
+                
             }
             switch (charMenu)
             {
