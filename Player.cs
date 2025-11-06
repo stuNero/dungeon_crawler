@@ -69,7 +69,7 @@ class Player : Actor
         if (equip)
         {
             bool running = true;
-            int selectedIndex = 0;
+            int selectedItemIndex = 0;
             
             while (running)
             {
@@ -92,27 +92,54 @@ class Player : Actor
                 }
                 Console.Clear();
                 Utility.GenerateMenu("INVENTORY:");
-                Utility.GenerateMenuActions(selectedIndex, invOptionsArr);
+                Utility.GenerateMenuActions(selectedItemIndex, invOptionsArr);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
-                        selectedIndex--;
-                        if (selectedIndex < 0)
-                            selectedIndex = invOptionsArr.Length - 1;
+                        selectedItemIndex--;
+                        if (selectedItemIndex < 0)
+                            selectedItemIndex = invOptionsArr.Length - 1;
                         break;
                     case ConsoleKey.DownArrow:
-                        selectedIndex++;
-                        if (selectedIndex > invOptionsArr.Length-1)
-                            selectedIndex = 0;
+                        selectedItemIndex++;
+                        if (selectedItemIndex > invOptionsArr.Length-1)
+                            selectedItemIndex = 0;
                         break;
                     case ConsoleKey.Enter:
-                        Debug.Assert(Inventory[selectedIndex] != null);
+                        Debug.Assert(Inventory[selectedItemIndex] != null);
                         try { Console.Clear(); } catch { }
-                        Console.WriteLine(this.Inventory[selectedIndex]!.Info());
+                        Console.WriteLine(this.Inventory[selectedItemIndex]!.Info());
 
-                        ConsoleKeyInfo key = Utility.PromptKey("Equip?(y/n)", clear: false);
-                        if (key.Key != ConsoleKey.Y) { return; }
-                        else { this.EquipItem(this.Inventory[selectedIndex]!); }
+                        bool subRunning = true;
+                        int selectedIndex = 0;
+                        string[] yesNo= ["Yes", "No"];
+                        while (subRunning)
+                        {
+                            Console.Clear();
+                            Utility.GenerateMenu("Equip " + this.Inventory[selectedItemIndex]!.Name + "?");
+                            Utility.GenerateMenuActions(selectedIndex, yesNo);
+                            switch (Console.ReadKey(true).Key)
+                            {
+                                case ConsoleKey.UpArrow:
+                                    selectedIndex--;
+                                    if (selectedIndex < 0)
+                                        selectedIndex = yesNo.Length - 1;
+                                    break;
+                                case ConsoleKey.DownArrow:
+                                    selectedIndex++;
+                                    if (selectedIndex >= yesNo.Length)
+                                        selectedIndex = 0;
+                                    break;
+                                case ConsoleKey.Enter:
+                                    if (yesNo[selectedIndex] == "Yes")
+                                    {
+                                        this.EquipItem(this.Inventory[selectedItemIndex]!);
+                                        subRunning = false;
+                                    }
+                                    else if (yesNo[selectedIndex] == "No") { subRunning = false; }
+                                    break;
+                            }
+                        }
                         running = false;
                         break;
                     case ConsoleKey.Escape:
@@ -125,7 +152,7 @@ class Player : Actor
             Console.WriteLine(Display());
         }
     }
-    public void CheckEquipped()
+    public void CheckEquipped(bool unequip = false)
     {
         /// <summary>
         /// Displays the currently equipped items and allows the user to
@@ -153,24 +180,110 @@ class Player : Actor
             }
             return txt;
         }
-        string choice = Utility.Prompt(Display());
-        if (string.IsNullOrWhiteSpace(choice)) { return; }
-        int.TryParse(choice, out int nr);
-        if (nr-1 > Equipped.Length) {Utility.Error("No item selected!"); return; }
-        if (this.Equipped[nr - 1] != null)
+        if (unequip)
         {
-            try{Console.Clear();} catch{}
-            Console.WriteLine(this.Equipped[nr - 1]!.Info());
+            bool running = true;
+            int selectedItemIndex = 0;
 
-            choice = Utility.Prompt("Unequip?(y/n)", clear: false);
-            if (string.IsNullOrWhiteSpace(choice)) { return; }
-            if (choice == "y") { this.UnEquipItem(this.Equipped[nr - 1]!); }
-            else { return; }
+            while (running)
+            {
+                List<string> invOptions = new();
+                foreach (Item? item in Equipped)
+                {
+                    if (item != null)
+                    { invOptions.Add(item.Name); }
+                }
+                if (invOptions.Count == 0) { return; }
+                string[] invOptionsArr = invOptions.ToArray();
+
+                Dictionary<string, Item> invDict = new();
+                for (int i = 0; i < invOptionsArr.Length; ++i)
+                {
+                    if (Equipped[i] != null)
+                    {
+                        invDict.Add(Equipped[i]!.Name, Equipped[i]!);
+                    }
+                }
+                Console.Clear();
+                Utility.GenerateMenu("EQUIPPED:");
+                Utility.GenerateMenuActions(selectedItemIndex, invOptionsArr);
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedItemIndex--;
+                        if (selectedItemIndex < 0)
+                            selectedItemIndex = invOptionsArr.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedItemIndex++;
+                        if (selectedItemIndex >= invOptionsArr.Length)
+                            selectedItemIndex = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        Debug.Assert(Equipped[selectedItemIndex] != null);
+                        try { Console.Clear(); } catch { }
+                        Console.WriteLine(this.Equipped[selectedItemIndex]!.Info());
+
+                        bool subRunning = true;
+                        int selectedIndex = 0;
+                        string[] yesNo = ["Yes", "No"];
+                        while (subRunning)
+                        {
+                            Console.Clear();
+                            Utility.GenerateMenu("Unequip " + this.Equipped[selectedItemIndex]!.Name + "?");
+                            Utility.GenerateMenuActions(selectedIndex, yesNo);
+                            switch (Console.ReadKey(true).Key)
+                            {
+                                case ConsoleKey.UpArrow:
+                                    selectedIndex--;
+                                    if (selectedIndex < 0)
+                                        selectedIndex = yesNo.Length - 1;
+                                    break;
+                                case ConsoleKey.DownArrow:
+                                    selectedIndex++;
+                                    if (selectedIndex >= yesNo.Length)
+                                        selectedIndex = 0;
+                                    break;
+                                case ConsoleKey.Enter:
+                                    if (yesNo[selectedIndex] == "Yes")
+                                    {
+                                        this.UnEquipItem(this.Equipped[selectedItemIndex]!);
+                                        subRunning = false;
+                                    }
+                                    else if (yesNo[selectedIndex] == "No") { subRunning = false; }
+                                    break;
+                            }
+                        }
+                        running = false;
+                        break;
+                    case ConsoleKey.Escape:
+                        return;
+                }
+            }
         }
         else
         {
-            Utility.Error("No item selected!");
-        } 
+            Console.WriteLine(Display());
+            Utility.PromptKey("",clear:false);
+        }
+        // string choice = Utility.Prompt(Display());
+        // if (string.IsNullOrWhiteSpace(choice)) { return; }
+        // int.TryParse(choice, out int nr);
+        // if (nr-1 > Equipped.Length) {Utility.Error("No item selected!"); return; }
+        // if (this.Equipped[nr - 1] != null)
+        // {
+        //     try{Console.Clear();} catch{}
+        //     Console.WriteLine(this.Equipped[nr - 1]!.Info());
+
+        //     choice = Utility.Prompt("Unequip?(y/n)", clear: false);
+        //     if (string.IsNullOrWhiteSpace(choice)) { return; }
+        //     if (choice == "y") { this.UnEquipItem(this.Equipped[nr - 1]!); }
+        //     else { return; }
+        // }
+        // else
+        // {
+        //     Utility.Error("No item selected!");
+        // } 
     }
     /// <summary>
     /// Unequips <paramref name="item"/> if it is currently equipped.
