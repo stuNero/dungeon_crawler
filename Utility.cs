@@ -122,7 +122,7 @@ abstract class Utility
             try { Console.Clear(); } catch { }
         }
     }
-    public static void GenerateMenuActions(int selectedIndex, string[] menuOptions, bool previousMenu = true)
+    public static void GenerateMenuActions(int selectedIndex, string[] menuOptions, bool previousMenu = true,ConsoleColor menuColor = ConsoleColor.DarkYellow)
     {
         for (int i = 0; i < menuOptions.Length; ++i)
         {
@@ -134,7 +134,7 @@ abstract class Utility
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.ForegroundColor = menuColor;
                 Console.WriteLine($"{menuOptions[i]}");
                 Console.ResetColor();
             }
