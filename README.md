@@ -31,7 +31,7 @@ and menus work incorrectly, please use PowerShell or terminal
 - Traders/trades
 - Basic Combat
 - Leveling system
-
+- Item diversity with different levels of commonality
 ---
 
 ## 🖥️ How to Run

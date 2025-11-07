@@ -1,5 +1,5 @@
 # TODO
-- *fix text encoding issues when starting new game (GIT BASH ISSUE! USE TERMINAL)*
+
 
 # Save Slot System — Design Summary
  ## Overview
