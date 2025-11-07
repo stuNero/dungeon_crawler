@@ -13,7 +13,7 @@ class Weapon : Item
         {
             case WeaponType.Axe:
                 this.Value += 3;
-                CritChance += 0.2;
+                CritChance += 0.1;
                 CritDamage += 0.3;
                 break;
             case WeaponType.Sword:
@@ -32,6 +32,12 @@ class Weapon : Item
                 CritDamage += 1;
                 break;
         }
+        CritChance = Math.Round(CritChance, 2);
+        CritDamage = Math.Round(CritDamage, 2);
+    }
+    public override string Info()
+    {
+        return base.Info() + $"\nCrit Chance: [{CritChance*100} %] | Crit Damage: [x{CritDamage}]\nType:[{Type}]";
     }
     public bool CritCheck()
     {
@@ -50,6 +56,7 @@ class Weapon : Item
         return damage;
     }
 }
+
 enum WeaponType
 {
     Axe,
