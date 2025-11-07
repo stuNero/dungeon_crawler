@@ -11,9 +11,10 @@ class Item
         Value = value;
 
     }
-    public string Info()
+    public virtual string Info()
     {
-        return  $"Name:   [{Name}]\n" +
+        return  "_______\n" +
+                $"Name:   [{Name}]\n" +
                 $"Damage: [{Value}]";
     }
 }
