@@ -1,4 +1,4 @@
-# 🎮 [ D U N G E O N - - C R A W L E R ]
+# 🎮  D U N G E O N   C R A W L E R
 
 > A text-based fantasy adventure where you battle enemies, collect loot, and make choices that shape your journey.
 
