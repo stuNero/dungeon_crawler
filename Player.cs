@@ -117,6 +117,7 @@ class Player : Actor
                         {
                             Console.Clear();
                             Utility.GenerateMenu("Equip " + this.Inventory[selectedItemIndex]!.Name + "?");
+                            Utility.PrintColor(Inventory[selectedItemIndex]!.Info() + "\n",ConsoleColor.DarkGreen);
                             Utility.GenerateMenuActions(selectedIndex, yesNo);
                             switch (Console.ReadKey(true).Key)
                             {
