@@ -71,7 +71,7 @@ while (running)
             {
                 Console.Clear();
                 Utility.GenerateMenu("Skip narration?");
-                Utility.GenerateMenuActions(selectedIndex, yesNo);
+                Utility.GenerateMenuActions(selectedIndex, yesNo,previousMenu:false);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -87,7 +87,7 @@ while (running)
                     case ConsoleKey.Enter:
                         if (yesNo[selectedIndex] == "Yes")
                         { narration = false; subRunning = false;}
-                        else if (yesNo[selectedIndex] == "No") { subRunning = false; }
+                        else if (yesNo[selectedIndex] == "No") { narration = true; subRunning = false; }
                         break;
                 }
             }
@@ -111,7 +111,7 @@ while (running)
                 string[] itemArray = itemList.ToArray();
                 try { Console.Clear(); } catch { }
                 Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({3 - player1.InventoryRange()})");
-                Utility.GenerateMenuActions(selectedIndex, itemArray, menuColor: ConsoleColor.DarkMagenta);
+                Utility.GenerateMenuActions(selectedIndex, itemArray, menuColor: ConsoleColor.DarkMagenta,previousMenu:false );
                 player1.CheckInventory();
                 switch (Console.ReadKey().Key)
                 {
@@ -177,7 +177,7 @@ while (running)
                         {
                             Console.Clear();
                             Utility.GenerateMenu("You are about to quit and will lose all progress!\nAre you sure?");
-                            Utility.GenerateMenuActions(selectedIndex, yesNo);
+                            Utility.GenerateMenuActions(selectedIndex, yesNo,previousMenu:false);
                             switch (Console.ReadKey().Key)
                             {
                                 case ConsoleKey.UpArrow:
