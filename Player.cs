@@ -38,7 +38,7 @@ class Player : Actor
     /// <param name="equip">If <c>true</c>, allow selecting and equipping an item; otherwise only display inventory.</param>
     public void CheckInventory(bool equip = false)
     {
-        string Display()
+        string SortnDisplay()
         {
             // Puts all items to beginning of array
             Item[] temp = new Item[InventorySize];
@@ -66,6 +66,7 @@ class Player : Actor
             }
             return txt;
         }
+        SortnDisplay();
         if (equip)
         {
             bool running = true;
@@ -106,7 +107,7 @@ class Player : Actor
                             selectedItemIndex = 0;
                         break;
                     case ConsoleKey.Enter:
-                        Debug.Assert(Inventory[selectedItemIndex] != null);
+                        Debug.Assert(Inventory[selectedItemIndex] != null); // CHECK THIS, FAILS ON EQUIP OVER OTHER ITEM
                         try { Console.Clear(); } catch { }
                         Console.WriteLine(this.Inventory[selectedItemIndex]!.Info());
 
@@ -150,7 +151,7 @@ class Player : Actor
         }
         else
         {
-            Console.WriteLine(Display());
+            Console.WriteLine(SortnDisplay());
         }
     }
     public void CheckEquipped(bool unequip = false)
