@@ -13,8 +13,7 @@ class Item
     }
     public virtual string Info()
     {
-        return  "_______\n" +
-                $"Name:   [{Name}]\n" +
+        return  $"Name:   [{Name}]\n" +
                 $"Damage: [{Value}]";
     }
 }
