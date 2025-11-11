@@ -38,7 +38,7 @@ while (running)
             {
                 try { Console.Clear(); } catch { }
                 Utility.GenerateMenu(title: "D U N G E O N  C R A W L E R");
-                Utility.GenerateMenuActions(selectedIndex, startOptions, previousMenu: false);
+                Utility.GenerateMenuActions(selectedIndex, startOptions);
                 Utility.PrintColor("\n\n\nCONTROLS: \nNavigate:  [^] [v]" +
                                                    "\nSelection: [ENTER]" +
                                                    "\nCancel:    [ESC]", ConsoleColor.DarkGray);
@@ -86,7 +86,7 @@ while (running)
             {
                 Console.Clear();
                 Utility.GenerateMenu("Skip narration?");
-                Utility.GenerateMenuActions(selectedIndex, yesNo, previousMenu: false);
+                Utility.GenerateMenuActions(selectedIndex, yesNo);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -114,7 +114,7 @@ while (running)
             {
                 Console.Clear();
                 Utility.GenerateMenu("Choose your character");
-                Utility.GenerateMenuActions(selectedCharIndex, playCharNames,previousMenu:false);
+                Utility.GenerateMenuActions(selectedCharIndex, playCharNames);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -135,7 +135,7 @@ while (running)
                             Console.Clear();
                             Utility.GenerateMenu("Are you sure?");
                             Utility.PrintColor(playChars[selectedCharIndex].Info(), ConsoleColor.Gray);
-                            Utility.GenerateMenuActions(selectedIndex, yesNo, previousMenu:false);
+                            Utility.GenerateMenuActions(selectedIndex, yesNo);
                             switch(Console.ReadKey().Key)
                             {
                                 case ConsoleKey.UpArrow:
@@ -182,7 +182,7 @@ while (running)
                 List<string> itemList = new();
                 // Print available items
                 foreach (Item item in tempItems)
-                { itemList.Add(item.Info()); }
+                { itemList.Add("\n" + item.Info()); }
 
                 string[] itemArray = itemList.ToArray();
                 try { Console.Clear(); } catch { }
@@ -200,7 +200,8 @@ while (running)
                 "   &@@@@@@@*   &@@@@@@@%      \n" +
                 "        #@@*   &@@/           \n",ConsoleColor.DarkGray);
                 Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({3 - player.InventoryRange()})");
-                Utility.GenerateMenuActions(selectedIndex, itemArray, menuColor: ConsoleColor.DarkMagenta, previousMenu: false);
+                Utility.GenerateMenuActions(selectedIndex, itemArray, menuColor: ConsoleColor.DarkMagenta);
+                Utility.PrintColor("Press [ESC] to quit choosing", ConsoleColor.DarkGray);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -242,6 +243,7 @@ while (running)
                 try { Console.Clear(); } catch { }
                 Utility.GenerateMenu(title: "MAIN MENU\nPLaying as " + player!.Name);
                 Utility.GenerateMenuActions(selectedIndex, mainOptions);
+                Utility.PrintColor("\n[ESC] - Back To Previous Menu",ConsoleColor.DarkGray);
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -266,7 +268,7 @@ while (running)
                         {
                             Console.Clear();
                             Utility.GenerateMenu("You are about to quit and will lose all progress!\nAre you sure?");
-                            Utility.GenerateMenuActions(selectedIndex, yesNo, previousMenu: false);
+                            Utility.GenerateMenuActions(selectedIndex, yesNo);
                             switch (Console.ReadKey().Key)
                             {
                                 case ConsoleKey.UpArrow:
@@ -316,6 +318,7 @@ while (running)
                 Console.Clear();
                 Utility.GenerateMenu("CHARACTER MENU");
                 Utility.GenerateMenuActions(selectedIndex, charOptions);
+                Utility.PrintColor("\n[ESC] - Back To Previous Menu",ConsoleColor.DarkGray);
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -369,7 +372,7 @@ while (running)
             {
                 Console.Clear();
                 Utility.GenerateMenu("You are about to quit the program.\nAre you sure?");
-                Utility.GenerateMenuActions(selectedIndex, yesNo, previousMenu: false);
+                Utility.GenerateMenuActions(selectedIndex, yesNo);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
