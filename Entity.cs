@@ -95,7 +95,7 @@ abstract class Entity
             }
         }
     }
-    public virtual void TakeDamage(Entity enemy)
+    public void TakeDamage(Entity enemy)
     {
         double dmg = 0;
         Item? weapon = null;
@@ -113,16 +113,7 @@ abstract class Entity
         {
             if (weapon is Weapon w)
             {
-                bool crit = false;
-                dmg = w.Value;
-                crit = w.CritCheck();
-                double critDamage = 0;
-                if (crit)
-                {
-                    critDamage = w.Crit();
-                    Utility.PrintColor(w.Name + " crit for " + (critDamage - dmg) + " damage!", ConsoleColor.DarkRed);
-                    dmg = critDamage;
-                }
+                dmg = w.CritCheck(dmg);
             }
         }
         if (this is Player) { Utility.PrintColor("You took " + dmg + " damage!", ConsoleColor.DarkRed); }

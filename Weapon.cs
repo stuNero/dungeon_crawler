@@ -39,15 +39,16 @@ class Weapon : Item
     {
         return base.Info() + $"\nCrit Chance: [{CritChance*100} %] | Crit Damage: [x{CritDamage}]\nType:[{Type}]";
     }
-    public bool CritCheck()
+    public double CritCheck(double damage)
     {
         Random rnd = new Random();
         double chance = rnd.NextDouble();
         if (chance <= CritChance)
         {
-            return true;
+            damage = Crit();
+            Utility.PrintColor(Name + " crit for " + (damage - this.Value) + " damage!", ConsoleColor.DarkRed);
         }
-        return false;
+        return damage;
     }
     public double Crit()
     {
