@@ -81,9 +81,6 @@ while (running)
             player = char1;
             Player char2 = new Player(name: "Rogue",     maxHP: 10.0, mp: 15, dmg: 2.0, xp: 100, lvl: 1, inventorySize: 6);
             Player char3 = new Player(name: "Barbarian", maxHP: 15.0, mp: 8,  dmg: 1.5, xp: 100, lvl: 1, inventorySize: 5);
-            List<Item> tempItems = new();
-            foreach (Item item1 in items) { tempItems.Add(item1); }
-            selectedIndex = 0;
             string[] yesNo = ["Yes", "No"];
             while (subRunning)
             {
@@ -109,6 +106,64 @@ while (running)
                         break;
                 }
             }
+            Player[] playChars = [char1, char2, char3];
+            string[] playCharNames = [char1.Name, char2.Name, char3.Name];
+            subRunning = true;
+            int selectedCharIndex = 0;
+            while (subRunning)
+            {
+                Console.Clear();
+                Utility.GenerateMenu("Choose your character");
+                Utility.GenerateMenuActions(selectedCharIndex, playCharNames,previousMenu:false);
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedCharIndex--;
+                        if (selectedCharIndex < 0)
+                            selectedCharIndex = playChars.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedCharIndex++;
+                        if (selectedCharIndex > playChars.Length - 1)
+                            selectedCharIndex = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        selectedIndex = 0;
+                        bool boolYesNo = true;
+                        while (boolYesNo)
+                        {
+                            Console.Clear();
+                            Utility.GenerateMenu("Are you sure?");
+                            Utility.PrintColor(playChars[selectedCharIndex].Info(), ConsoleColor.Gray);
+                            Utility.GenerateMenuActions(selectedIndex, yesNo, previousMenu:false);
+                            switch(Console.ReadKey().Key)
+                            {
+                                case ConsoleKey.UpArrow:
+                                    selectedIndex--;
+                                    if (selectedIndex < 0)
+                                        selectedIndex = playChars.Length - 1;
+                                    break;
+                                case ConsoleKey.DownArrow:
+                                    selectedIndex++;
+                                    if (selectedIndex > playChars.Length - 1)
+                                        selectedIndex = 0;
+                                    break;
+                                case ConsoleKey.Enter:
+                                    if (yesNo[selectedIndex] == "Yes")
+                                    {
+                                        player = playChars[selectedCharIndex];
+                                        boolYesNo = false;
+                                        subRunning = false;
+                                    }
+                                    else if (yesNo[selectedIndex] == "No") {boolYesNo = false;}
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+
+
             if (narration)
             {
                 Console.Clear();
@@ -117,6 +172,9 @@ while (running)
                 Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
                 "old oak chest which materializes from the black, seemingly infinite void room. ");
             }
+            List<Item> tempItems = new();
+            foreach (Item item1 in items) { tempItems.Add(item1); }
+            selectedIndex = 0;
             subRunning = true;
             selectedIndex = 0;
             while (player.InventoryRange() < 3 && subRunning)
@@ -283,12 +341,10 @@ while (running)
                 {
                     case CharMenu.TakeDamage:
                         try { Console.Clear(); } catch { }
-                        if (player!.Equipped[0] is Weapon w)
-                        {
-#pragma warning disable CA1416 // Suppress: Console.Beep is only supported on Windows
-                            player!.TakeDamage(w);
-                            Console.Beep(700, 400);
-                        }
+                        #pragma warning disable CA1416 // Suppress: Console.Beep is only supported on Windows
+                        player!.TakeDamage(player);
+                        Console.Beep(700, 400);
+                        
                         Console.WriteLine(player.Info());
                         if (!player.Alive)
                         {
