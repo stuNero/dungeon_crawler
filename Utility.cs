@@ -22,26 +22,6 @@ abstract class Utility
         Console.WriteLine(msg);
         Console.ResetColor();
     }
-    /// <summary>
-    /// Prompts the user with an input prompt, prints option to cancel prompt and then returns Console input.
-    /// </summary>
-    /// <remarks>
-    /// DOES NOT HANDLE USER INPUT, this requires outside implementation. 
-    /// </remarks>
-    /// <param name="input">Consoles prompt</param>
-    /// <param name="clear">Boolean variable for option to clear previous console text</param>
-    /// <returns></returns>
-    public static string Prompt(string input, bool clear = true)
-    {
-        if (clear)
-        { try { Console.Clear(); } catch { } }
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine("\n(Empty line and 'ENTER' to cancel..)");
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.Write(input);
-        Console.ResetColor();
-        return Console.ReadLine()!;
-    }
     public static ConsoleKeyInfo PromptKey(string input = "", bool clear = true)
     {
         if (clear)
@@ -51,7 +31,7 @@ abstract class Utility
         Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.Write(input);
         Console.ResetColor();
-        return Console.ReadKey()!;
+        return Console.ReadKey(true)!;
     }
     /// <summary>
     /// Prints a colored Success message with a bool option for returning to menu
@@ -110,20 +90,28 @@ abstract class Utility
     }
     public static void GenerateMenuActions(int selectedIndex, string[] menuOptions,ConsoleColor menuColor = ConsoleColor.DarkYellow)
     {
-        for (int i = 0; i < menuOptions.Length; ++i)
+        int colorShiftOffset = 0;
+
+        ConsoleColor[] colors = { ConsoleColor.Yellow, ConsoleColor.DarkYellow };
+
+        for (int i = 0; i < menuOptions.Length; i++)
         {
             if (i == selectedIndex)
             {
+                Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"    {menuOptions[i]}");
-                Console.ResetColor();
+                Console.WriteLine($"  > {menuOptions[i]}");
             }
             else
             {
-                Console.ForegroundColor = menuColor;
-                Console.WriteLine($"{menuOptions[i]}");
-                Console.ResetColor();
+                int colorIndex = (i + colorShiftOffset) % colors.Length;  // Alternates between 0 and 1
+                Console.ForegroundColor = colors[colorIndex];
+                Console.WriteLine($" {menuOptions[i]}");
             }
+            Console.ResetColor();
         }
+
+        colorShiftOffset = (colorShiftOffset + 1) % 2;  // Change to % 2
     }
+    
 }
