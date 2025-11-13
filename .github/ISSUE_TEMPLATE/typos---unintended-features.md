@@ -1,14 +1,14 @@
 ---
-name: Bug report
+name: Typos & Unintended Features
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: question
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the issue**
+A clear and concise description of what the issue is.
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
