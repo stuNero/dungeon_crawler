@@ -200,6 +200,7 @@ while (running)
                 goblin1!.AddItem(item);
             }
             Console.Clear();
+            Utility.GenerateMenu("Your Inventory");
             player.CheckInventory();
             Utility.PrintColor("Press Any Key to continue", ConsoleColor.DarkGray);
             Console.ReadKey(true);
@@ -216,7 +217,7 @@ while (running)
             while (subRunning)
             {
                 try { Console.Clear(); } catch { }
-                Utility.GenerateMenu(title: "MAIN MENU\nPLaying as " + player!.Name);
+                Utility.GenerateMenu(title: "MAIN MENU\nPlaying as " + player!.Name);
                 Utility.GenerateMenuActions(selectedIndex, mainOptions);
                 Utility.PrintColor("\n[ESC] - Back To Previous Menu", ConsoleColor.DarkGray);
                 switch (Console.ReadKey(true).Key)

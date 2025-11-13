@@ -66,6 +66,7 @@ class Player : Actor
                 Console.Clear();
                 Utility.GenerateMenu("INVENTORY:");
                 Utility.GenerateMenuActions(selectedItemIndex, invOptionsArr);
+                Utility.PrintColor("[ESC] - Back to previous menu", ConsoleColor.DarkGray);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -181,6 +182,7 @@ class Player : Actor
                 Console.Clear();
                 Utility.GenerateMenu("EQUIPPED:");
                 Utility.GenerateMenuActions(selectedItemIndex, invOptionsArr);
+                Utility.PrintColor("[ESC] - Back to previous menu", ConsoleColor.DarkGray);
                 switch (Console.ReadKey(true).Key)
                 {
                     case ConsoleKey.UpArrow:
