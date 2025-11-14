@@ -16,5 +16,8 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Software**
+What software did you encounter the bug on? (Bash, Terminal, Powershell etc)
+
 **Additional context**
 Add any other context about the problem here.
