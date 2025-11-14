@@ -245,21 +245,24 @@ class Player : Actor
     }
     public override void Loot(Entity victim)
     {
+        Console.WriteLine("During loot");
         List<Item> tempItems = new();
         foreach (Item? item in victim.Inventory) { tempItems.Add(item!); }
         int selectedItemIndex = 0;
         bool subRunning = true;
-        while (victim.InInventoryRange(InventoryRange()) && subRunning)
+        Console.WriteLine("Items in inventory: " + victim.InventoryRange() +""+ (victim.InventoryRange() > 0 && subRunning));
+        Console.ReadKey(true);
+        while (victim.InventoryRange() > 0 && subRunning)
         {
             Console.Clear();
             List<string> itemList = new();
             foreach (Item? item in tempItems)
-            { if (item != null){itemList.Add("\n" + item!.Name);} }
+            { if (item != null) { itemList.Add("\n" + item!.Name); } }
 
             string[] itemArray = itemList.ToArray();
             Utility.GenerateMenu(victim.Name + "s Inventory:");
             Utility.GenerateMenuActions(selectedItemIndex, itemArray);
-            Utility.PrintColor("[ESC] - Stop looting",ConsoleColor.DarkGray);
+            Utility.PrintColor("[ESC] - Stop looting", ConsoleColor.DarkGray);
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.UpArrow:
@@ -274,6 +277,7 @@ class Player : Actor
                     break;
                 case ConsoleKey.Enter:
                     this.AddItem(tempItems[selectedItemIndex]);
+                    victim.DiscardItem(tempItems[selectedItemIndex]);
                     tempItems.Remove(tempItems[selectedItemIndex]);
                     selectedItemIndex = 0;
                     break;
@@ -282,6 +286,7 @@ class Player : Actor
                     return;
             }
         }
+        return;
     }
     /// <summary>
     /// Unequips <paramref name="item"/> if it is currently equipped.

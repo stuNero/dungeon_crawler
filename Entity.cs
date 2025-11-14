@@ -21,6 +21,14 @@ abstract class Entity
         InventorySize = inventorySize;
         Inventory = new Item[InventorySize];
     }
+    public virtual string Info()
+    {
+        string txt = "___________________\n";
+
+        txt += $"Name: [{Name}]\n"
+             + $"HP:   [{Hp}]\n";
+        return txt;
+    }
     public void SortInventory()
     {
         // Puts all items to beginning of array
@@ -51,14 +59,6 @@ abstract class Entity
         }
         Console.WriteLine(txt);
     }
-    public virtual string Info()
-    {
-        string txt = "___________________\n";
-
-        txt += $"Name: [{Name}]\n"
-             + $"HP:   [{Hp}]\n";
-        return txt;
-    }
     public int InventoryRange()
     {
         int amount = 0;
@@ -77,14 +77,30 @@ abstract class Entity
     }
     public void AddItem(Item item)
     {
+        foreach (Item? item1 in Inventory)
+        {
+            if (item1 == item)
+            {
+                Utility.PrintColor("Item already in inventory", ConsoleColor.DarkRed);
+                Console.ReadKey(true);
+                return;
+            }
+        }
         for (int i = 0; i < InventorySize; i++)
         {
             if (Inventory[i] == null)
             {
                 Inventory[i] = item;
                 Debug.Assert(Inventory[i] != null);
-                break;
+                return;
             }
+        }
+    }
+    public void DiscardItem(Item item)
+    {
+        for(int i = 0; i<Inventory.Length;++i)
+        {
+            if (item == Inventory[i]) { Inventory[i] = null;}
         }
     }
     public virtual void Loot(Entity victim) {}
