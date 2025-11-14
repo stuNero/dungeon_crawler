@@ -127,11 +127,11 @@ while (running)
                                 case ConsoleKey.UpArrow:
                                     selectedIndex--;
                                     if (selectedIndex < 0)
-                                        selectedIndex = playChars.Length - 1;
+                                        selectedIndex = yesNo.Length - 1;
                                     break;
                                 case ConsoleKey.DownArrow:
                                     selectedIndex++;
-                                    if (selectedIndex >= playChars.Length - 1)
+                                    if (selectedIndex > yesNo.Length - 1)
                                         selectedIndex = 0;
                                     break;
                                 case ConsoleKey.Enter:
