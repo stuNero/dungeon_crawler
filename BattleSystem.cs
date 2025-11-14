@@ -64,8 +64,6 @@ class BattleSystem
                     case ConsoleKey.Enter:
                         if (yesNo[selectedIndex] == "Loot")
                         {
-                            Console.WriteLine("Before loot");
-                            Console.ReadKey(true);
                             winner.Loot(killed);
                             subRunning = false;
                         }

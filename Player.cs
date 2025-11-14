@@ -245,13 +245,10 @@ class Player : Actor
     }
     public override void Loot(Entity victim)
     {
-        Console.WriteLine("During loot");
         List<Item> tempItems = new();
         foreach (Item? item in victim.Inventory) { tempItems.Add(item!); }
         int selectedItemIndex = 0;
         bool subRunning = true;
-        Console.WriteLine("Items in inventory: " + victim.InventoryRange() +""+ (victim.InventoryRange() > 0 && subRunning));
-        Console.ReadKey(true);
         while (victim.InventoryRange() > 0 && subRunning)
         {
             Console.Clear();
