@@ -19,8 +19,6 @@ and menus work incorrectly, please use PowerShell or terminal
 - ENTER     Menu Selection
 - ESC       Go Back / Exit / Cancel
 
-## Gameplay Overview
-
 ## Future Plans
 - Map based exploration
     - Grid based maps
