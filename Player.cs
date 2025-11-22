@@ -36,6 +36,13 @@ class Player : Actor
     /// attempt to equip it.
     /// </summary>
     /// <param name="equip">If <c>true</c>, allow selecting and equipping an item; otherwise only display inventory.</param>
+    public override string Info()
+    {
+        string txt = 
+        $"\nInventory Slots: [{InventorySize}]\n___________________";
+
+        return base.Info() + txt;
+    }
     public override void CheckInventory(bool equip = false)
     {
         base.SortInventory();

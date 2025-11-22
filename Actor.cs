@@ -25,8 +25,7 @@ abstract class Actor : Entity
 
         string txt = $"LVL:  [{Lvl}]\n"
                    + $"MP:   [{Mp}]\n"
-                   + $"DMG:  [{Dmg}]\n";
-        txt += "___________________";
+                   + $"DMG:  [{Dmg}]";
         return base.Info() + txt;
     }
 }
