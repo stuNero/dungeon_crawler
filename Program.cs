@@ -381,6 +381,10 @@ while (running)
                 }
             }
             break;
+        case Menu.GameOver:
+            Utility.PrintColor("--- Y O U  D I E D ---",ConsoleColor.DarkRed);
+            Console.ReadKey(true);
+            break;
         default: break;
     }
 }

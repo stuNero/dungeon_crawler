@@ -11,6 +11,7 @@ class BattleSystem
         Attacker = attacker;
         Defender = defender;
         BattleActive = true;
+        if (!defender.Alive || !attacker.Alive) {return;}
         if (Attacker is Enemy)
         {
             Console.WriteLine($"A wild {Attacker.Name} appears!");
