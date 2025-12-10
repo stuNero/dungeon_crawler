@@ -12,22 +12,22 @@ class Weapon : Item
         switch (type)
         {
             case WeaponType.Axe:
-                this.Value += 3;
+                this.EffectAmount += 3;
                 CritChance += 0.1;
                 CritDamage += 0.3;
                 break;
             case WeaponType.Sword:
-                this.Value += 2;
+                this.EffectAmount += 2;
                 CritChance += 0.05;
                 CritDamage += 0.1;
                 break;
             case WeaponType.Dagger:
-                this.Value += 0;
+                this.EffectAmount += 0;
                 CritChance += 0.2;
                 CritDamage += 1.5;
                 break;
             case WeaponType.Mace:
-                this.Value += 3;
+                this.EffectAmount += 3;
                 CritChance += 0;
                 CritDamage += 1;
                 break;
@@ -46,13 +46,13 @@ class Weapon : Item
         if (chance <= CritChance)
         {
             damage = Crit();
-            Utility.PrintColor(Name + " crit for " + (damage - this.Value) + " damage!", ConsoleColor.DarkRed);
+            Utility.PrintColor(Name + " crit for " + (damage - this.EffectAmount) + " damage!", ConsoleColor.DarkRed);
         }
         return damage;
     }
     public double Crit()
     {
-        double damage = this.Value;
+        double damage = this.EffectAmount;
         damage *= CritDamage;
         return damage;
     }

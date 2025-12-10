@@ -3,17 +3,17 @@ namespace Game;
 class Item
 {
     public string Name;
-    public double Value;
+    public double EffectAmount;
 
-    public Item(string name, double value)
+    public Item(string name, double effectAmount)
     {
         Name = name;
-        Value = value;
+        EffectAmount = effectAmount;
 
     }
     public virtual string Info()
     {
         return  $"Name:   [{Name}]\n" +
-                $"Damage: [{Value}]";
+                $"Damage: [{EffectAmount}]";
     }
 }
