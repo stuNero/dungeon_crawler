@@ -138,6 +138,7 @@ while (running)
                                     if (yesNo[selectedIndex] == "Yes")
                                     {
                                         player = playChars[selectedCharIndex];
+                                        DBManager.SavePlayer(1,player);
                                         boolYesNo = false;
                                         subRunning = false;
                                     }
