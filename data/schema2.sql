@@ -5,7 +5,7 @@ PRAGMA foreign_keys = ON;
 ---------------------------------------------------
 CREATE TABLE Entities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    save_slot INT NOT NULL,
+    save_slot INT NOT NULL REFERENCES Save_Slots(id),
     entity_type TEXT NOT NULL,    -- 'player' or 'enemy'
     name TEXT NOT NULL,
     alive BOOLEAN NOT NULL,
@@ -59,3 +59,5 @@ CREATE TABLE Save_Slots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TEXT DEFAULT (datetime('now'))
 );
+
+DROP TABLE Entities;
