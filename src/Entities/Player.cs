@@ -326,7 +326,7 @@ class Player : Actor
         if(item is Weapon)
         {
             UnEquip(item);
-            this.Dmg -= item.Value;
+            this.Dmg -= item.EffectAmount;
         }
     }
     /// <summary>
@@ -371,13 +371,13 @@ class Player : Actor
         {
             case Weapon:
                 Equip(item);
-                this.Dmg += item.Value;
+                this.Dmg += item.EffectAmount;
                 Utility.Success(item.Name + " equipped!");
                 break;
             case Consumable:
-                double restoredHP = item.Value;
+                double restoredHP = item.EffectAmount;
                 double leftOverHP = 0;
-                this.Hp += item.Value;
+                this.Hp += item.EffectAmount;
                 if (this.Hp > this.MaxHP)
                 {
                     leftOverHP = this.Hp - MaxHP;
