@@ -63,6 +63,7 @@ while (running)
             }
             break;
         case Menu.Creation:
+            DataManager.MakeSaveSlot();
             subRunning = true;
             Player char1 = new Player(name: "Knight", maxHP: 25.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 4);
             Player char2 = new Player(name: "Rogue", maxHP: 10.0, mp: 15, dmg: 2.0, xp: 100, lvl: 1, inventorySize: 6);

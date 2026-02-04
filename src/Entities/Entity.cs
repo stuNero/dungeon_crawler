@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 
 abstract class Entity
 {
+    public int Id;
     public string Name;
     public bool Alive;
     public double Hp;

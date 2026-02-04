@@ -9,7 +9,7 @@ static class DataManager
 {
     static string DbDir = Path.Combine(AppContext.BaseDirectory, "data");
     static string DbPath = Path.Combine(DbDir, "data.db");
-    static string connString = $"Data Source={DbPath}";
+    static string connString = $"Data Source={DbPath};Mode=ReadWriteCreate";
     static DataManager()
     {
         Directory.CreateDirectory(DbDir);
@@ -22,7 +22,7 @@ static class DataManager
             var cmd = conn.CreateCommand();
             cmd.CommandText =
             """
-            INSERT INTO SaveSlots (created_at)
+            INSERT INTO Save_Slots (created_at)
             VALUES (CURRENT_TIMESTAMP);
             """;
             cmd.ExecuteNonQuery();
