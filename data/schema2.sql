@@ -19,6 +19,7 @@ CREATE TABLE Entities (
     inventory_size INTEGER NOT NULL
 );
 
+DROP TABLE Items;
 ---------------------------------------------------
 -- ITEMS (Weapons, consumables, etc.)
 ---------------------------------------------------
@@ -29,13 +30,14 @@ CREATE TABLE Items (
     effect_amount REAL NOT NULL,
     weapon_type TEXT NULL,        -- Sword / Axe / etc
     crit_chance REAL NULL,
-    crit_damage REAL NULL
+    crit_damage REAL NULL,
+    UNIQUE(name)
 );
 
 ---------------------------------------------------
 -- INVENTORY (Many-to-Many: entity → items)
 ---------------------------------------------------
-CREATE TABLE Inventory (
+CREATE TABLE Inventories (
     entity_id INTEGER NOT NULL REFERENCES Entities(id),
     item_id INTEGER NOT NULL REFERENCES Items(id),
     quantity INTEGER NOT NULL DEFAULT 1,
@@ -45,7 +47,7 @@ CREATE TABLE Inventory (
 ---------------------------------------------------
 -- EQUIPPED ITEMS (Equipment slots)
 ---------------------------------------------------
-CREATE TABLE Equipped (
+CREATE TABLE Equipped_Inventories (
     entity_id INTEGER NOT NULL REFERENCES Entities(id),
     slot INTEGER NOT NULL,           -- 'weapon', 'armor', etc.
     item_id INTEGER NOT NULL REFERENCES Items(id),

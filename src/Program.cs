@@ -11,12 +11,7 @@ bool running = true;
 bool narration = true;
 int selectedIndex = 0;
 
-List<Item> items = new();
-items.Add(new Weapon("Longsword", 2, WeaponType.Sword));
-items.Add(new Weapon("Bearded Axe", 2, WeaponType.Axe));
-items.Add(new Weapon("Quillon Dagger", 2, WeaponType.Dagger));
-items.Add(new Weapon("Flanged Mace", 2, WeaponType.Mace));
-items.Add(new Consumable("Health Potion", 2));
+List<Item> items = DataManager.LoadGlobalItems();
 
 while (running)
 {
@@ -63,7 +58,6 @@ while (running)
             }
             break;
         case Menu.Creation:
-            DataManager.MakeSaveSlot();
             subRunning = true;
             Player char1 = new Player(name: "Knight", maxHP: 25.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 4);
             Player char2 = new Player(name: "Rogue", maxHP: 10.0, mp: 15, dmg: 2.0, xp: 100, lvl: 1, inventorySize: 6);
@@ -139,7 +133,6 @@ while (running)
                                     if (yesNo[selectedIndex] == "Yes")
                                     {
                                         player = playChars[selectedCharIndex];
-                                        DataManager.SavePlayer(1,player);
                                         boolYesNo = false;
                                         subRunning = false;
                                     }
@@ -206,6 +199,10 @@ while (running)
             Console.Clear();
             Utility.GenerateMenu("Your Inventory");
             player.CheckInventory();
+            foreach (Item item in items)
+            {
+                Console.WriteLine(item.Id);
+            }
             Utility.PrintColor("Press Any Key to continue", ConsoleColor.DarkGray);
             Console.ReadKey(true);
             currentMenu = Menu.Main;
