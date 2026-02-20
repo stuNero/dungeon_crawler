@@ -27,8 +27,8 @@ class Player : Actor
     /// <param name="xp">Starting experience points.</param>
     /// <param name="lvl">Starting level.</param>
     /// <param name="inventorySize">Size of the player's inventory (number of slots).</param>
-    public Player(string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
-                : base(name, maxHP, mp, dmg, xp, lvl, inventorySize)
+    public Player(int id, string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
+                : base(id, name, maxHP, mp, dmg, xp, lvl, inventorySize)
     { }
     /// <summary>
     /// Shows the player's inventory to the console. When <paramref name="equip"/>

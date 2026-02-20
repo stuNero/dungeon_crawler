@@ -13,7 +13,7 @@ abstract class Entity
     public double MaxHP;
     public int InventorySize;
     public Item?[] Inventory;
-    public Entity(string name, double maxHP, int inventorySize)
+    public Entity(int id, string name, double maxHP, int inventorySize)
     {
         Name = name;
         Hp = maxHP;
