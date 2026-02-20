@@ -5,7 +5,6 @@ PRAGMA foreign_keys = ON;
 ---------------------------------------------------
 CREATE TABLE Entities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    save_slot INT NOT NULL REFERENCES Save_Slots(id),
     entity_type TEXT NOT NULL,    -- 'player' or 'enemy'
     name TEXT NOT NULL,
     alive BOOLEAN NOT NULL,
@@ -18,8 +17,6 @@ CREATE TABLE Entities (
     enemy_type INTEGER NULL,      -- Only used if entity_type = 'enemy'
     inventory_size INTEGER NOT NULL
 );
-
-DROP TABLE Items;
 ---------------------------------------------------
 -- ITEMS (Weapons, consumables, etc.)
 ---------------------------------------------------
@@ -47,7 +44,7 @@ CREATE TABLE Inventories (
 ---------------------------------------------------
 -- EQUIPPED ITEMS (Equipment slots)
 ---------------------------------------------------
-CREATE TABLE Equipped_Inventories (
+CREATE TABLE EquippedInventories (
     entity_id INTEGER NOT NULL REFERENCES Entities(id),
     slot INTEGER NOT NULL,           -- 'weapon', 'armor', etc.
     item_id INTEGER NOT NULL REFERENCES Items(id),
@@ -57,10 +54,21 @@ CREATE TABLE Equipped_Inventories (
 ---------------------------------------------------
 -- SAVE SLOTS
 ---------------------------------------------------
-CREATE TABLE Save_Slots (
+CREATE TABLE SaveSlots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TEXT DEFAULT (datetime('now'))
 );
 
-DROP TABLE Entities;
-
+CREATE TABLE playerClasses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    alive BOOLEAN NOT NULL,
+    hp REAL NOT NULL,
+    mp REAL NOT NULL,
+    max_hp REAL NOT NULL,
+    dmg REAL NOT NULL,
+    xp INTEGER NOT NULL,
+    xp_drop INTEGER NOT NULL,
+    lvl INTEGER NOT NULL,
+    inventory_size INTEGER NOT NULL
+);
