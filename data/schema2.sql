@@ -59,7 +59,7 @@ CREATE TABLE SaveSlots (
     created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE playerClasses (
+CREATE TABLE PlayerClasses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     alive BOOLEAN NOT NULL,
@@ -70,5 +70,12 @@ CREATE TABLE playerClasses (
     xp INTEGER NOT NULL,
     xp_drop INTEGER NOT NULL,
     lvl INTEGER NOT NULL,
-    inventory_size INTEGER NOT NULL
+    inventory_size INTEGER NOT NULL,
+    UNIQUE (name)
+);
+
+CREATE TABLE EntitiesPerSave (
+    entity INTEGER NOT NULL REFERENCES Entities(id),
+    slot INTEGER NOT NULL REFERENCES SaveSlots(id),
+    UNIQUE (entity, slot)
 );

@@ -27,6 +27,39 @@ static class DataManager
             cmd.ExecuteNonQuery();
         }
     }
+    public static List<Player> LoadGlobalClasses()
+    {
+        List<Player> classes = new List<Player>();
+        using (var conn = new SqliteConnection(connString))
+        {
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText =
+            """
+            Select * FROM PlayerClasses;
+            """;
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read()) 
+                {
+                    int id = reader.GetInt32(0);
+                    string name = reader.GetString(1);
+                    bool alive = reader.GetBoolean(2);
+                    double hp = reader.GetDouble(3);
+                    double maxHp = reader.GetDouble(4);
+                    int mp = reader.GetInt32(5);
+                    double dmg = reader.GetDouble(6);
+                    int xp = reader.GetInt32(7);
+                    int xp_drop = reader.GetInt32(8);
+                    int lvl = reader.GetInt32(9);
+                    int inventorySize = reader.GetInt32(10);
+                    Player newClass = new Player(id, name, maxHp, mp, dmg, xp, lvl, inventorySize);
+                    classes.Add(newClass);
+                }
+            }
+            return classes;
+        }
+    }
     public static List<Item> LoadGlobalItems()
     {
         List<Item> items = new List<Item>();
@@ -45,25 +78,23 @@ static class DataManager
                     int id = reader.GetInt32(0);
                     string itemType = reader.GetString(1);
                     string name = reader.GetString(2);
-                    int effectAmount = reader.GetInt32(3);
+                    double effectAmount = reader.GetDouble(3);
                     if (itemType == "weapon")
                     {
                         string weaponTypeStr = reader.GetString(4);
-                        int critChance = reader.GetInt32(5);
-                        int critDamage = reader.GetInt32(6);
+                        double critChance = reader.GetDouble(5);
+                        double critDamage = reader.GetDouble(6);
                         if (Enum.TryParse<WeaponType>(weaponTypeStr, out var weaponType))
                         {
                             var weapon = new Weapon(name, effectAmount, weaponType) { Id = id };
                             weapon.CritChance = critChance;
                             weapon.CritDamage = critDamage;
-                            Utility.PromptKey(weapon.Info());
                             items.Add(weapon);
                         }
                     }
                     else if (itemType == "consumable")
                     {
                         var consumable = new Consumable(name, effectAmount) { Id = id };
-                        Utility.PromptKey(consumable.Info());
                         items.Add(consumable);
                     }
                 }
