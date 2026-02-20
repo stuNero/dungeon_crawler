@@ -4,13 +4,16 @@ using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using Game;
 
-Player? player = null; 
-Enemy? goblin1 = null; 
 Menu currentMenu = Menu.Start;
 bool running = true;
 bool narration = true;
 int selectedIndex = 0;
+int selectedSaveSlot = 0;
 
+Player? player = null;
+Dictionary<int, List<Entity>> entitiesPerSave = new Dictionary<int, List<Entity>>();
+List<Player> playerClasses = DataManager.LoadGlobalClasses();
+List<Entity> entities = new List<Entity>();
 List<Item> items = DataManager.LoadGlobalItems();
 
 while (running)
@@ -21,7 +24,6 @@ while (running)
     {
         case Menu.Start:
             subRunning = true;
-            goblin1 = new Enemy(name: "Goblin Soldier", maxHP: 10.0, mp: 5, dmg: 1, xp: 100, lvl: 1, 3, "Goblin");
             string[] startOptions = ["START", "QUIT"];
 
             selectedIndex = 0;
@@ -59,9 +61,6 @@ while (running)
             break;
         case Menu.Creation:
             subRunning = true;
-            Player char1 = new Player(name: "Knight", maxHP: 25.0, mp: 10, dmg: 1.0, xp: 100, lvl: 1, inventorySize: 4);
-            Player char2 = new Player(name: "Rogue", maxHP: 10.0, mp: 15, dmg: 2.0, xp: 100, lvl: 1, inventorySize: 6);
-            Player char3 = new Player(name: "Barbarian", maxHP: 15.0, mp: 8, dmg: 1.5, xp: 100, lvl: 1, inventorySize: 5);
             string[] yesNo = ["Yes", "No"];
             while (subRunning)
             {
@@ -87,25 +86,32 @@ while (running)
                         break;
                 }
             }
-            Player[] playChars = [char1, char2, char3];
-            string[] playCharNames = [char1.Name, char2.Name, char3.Name];
+            List<string> playCharNames = new List<string>();
+            foreach (Player pClass in playerClasses)
+            {
+                playCharNames.Add(pClass.Name);
+            }
             subRunning = true;
             int selectedCharIndex = 0;
             while (subRunning)
             {
                 Console.Clear();
+                foreach (string name in playCharNames)
+                {
+                    Console.WriteLine(name);
+                }
                 Utility.GenerateMenu("Choose your character");
-                Utility.GenerateMenuActions(selectedCharIndex, playCharNames);
+                Utility.GenerateMenuActions(selectedCharIndex, playCharNames.ToArray());
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
                         selectedCharIndex--;
                         if (selectedCharIndex < 0)
-                            selectedCharIndex = playChars.Length - 1;
+                            selectedCharIndex = playerClasses.Count - 1;
                         break;
                     case ConsoleKey.DownArrow:
                         selectedCharIndex++;
-                        if (selectedCharIndex > playChars.Length - 1)
+                        if (selectedCharIndex > playerClasses.Count - 1)
                             selectedCharIndex = 0;
                         break;
                     case ConsoleKey.Enter:
@@ -115,7 +121,7 @@ while (running)
                         {
                             Console.Clear();
                             Utility.GenerateMenu("Are you sure?");
-                            Utility.PrintColor(playChars[selectedCharIndex].Info(), ConsoleColor.DarkCyan);
+                            Utility.PrintColor(playerClasses[selectedCharIndex].Info(), ConsoleColor.DarkCyan);
                             Utility.GenerateMenuActions(selectedIndex, yesNo);
                             switch(Console.ReadKey().Key)
                             {
@@ -132,7 +138,7 @@ while (running)
                                 case ConsoleKey.Enter:
                                     if (yesNo[selectedIndex] == "Yes")
                                     {
-                                        player = playChars[selectedCharIndex];
+                                        player = playerClasses[selectedCharIndex];
                                         boolYesNo = false;
                                         subRunning = false;
                                     }
@@ -193,7 +199,10 @@ while (running)
             foreach (Item item in tempItems)
             {
                 if (item == null) continue;
-                goblin1!.AddItem(item);
+                foreach (Entity entity in entities)
+                {
+                    entity.AddItem(item);
+                }
             }
 
             Console.Clear();
@@ -275,11 +284,11 @@ while (running)
             break;
         case Menu.Battle:
             Debug.Assert(player != null);
-            Debug.Assert(goblin1 != null);
-
-            BattleSystem battle = new(player, goblin1);
-            currentMenu = battle.BattleLoop();
-
+            foreach (Enemy enemy in entities)
+            {
+                BattleSystem battle = new(player, enemy);
+                currentMenu = battle.BattleLoop();
+            }
             currentMenu = Menu.Main;
             break;
         case Menu.Character:
