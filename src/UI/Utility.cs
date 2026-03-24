@@ -49,7 +49,6 @@ abstract class Utility
             Console.ReadKey(true);
         }
         Console.ResetColor();
-        try { Console.Clear(); } catch { }
     }
     public static void PrintColor(string msg, ConsoleColor consoleColor, bool NoLineWrite = false)
     {
@@ -95,7 +94,7 @@ abstract class Utility
             try { Console.Clear(); } catch { }
         }
     }
-    public static void GenerateMenuActions(int selectedIndex, string[] menuOptions,ConsoleColor menuColor = ConsoleColor.DarkYellow)
+    public static void GenerateMenuActions(int selectedIndex, string[] menuOptions, bool left = false, ConsoleColor menuColor = ConsoleColor.DarkYellow)
     {
         int colorShiftOffset = 0;
 
@@ -107,13 +106,20 @@ abstract class Utility
             {
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"  > {menuOptions[i]}");
+                if (left)
+                    Console.Write($"  > {menuOptions[i]}");
+                else
+                    Console.WriteLine($"  > {menuOptions[i]}");
             }
             else
             {
                 int colorIndex = (i + colorShiftOffset) % colors.Length;  // Alternates between 0 and 1
                 Console.ForegroundColor = colors[colorIndex];
-                Console.WriteLine($" {menuOptions[i]}");
+                if (left)
+                    Console.Write($" {menuOptions[i]}");
+                else
+                    Console.WriteLine($" {menuOptions[i]}");
+
             }
             Console.ResetColor();
         }
