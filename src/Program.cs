@@ -61,7 +61,6 @@ while (running)
             break;
         
         case Menu.Creation:
-            int chosenSlot = 0;
             subRunning = true;
             while (subRunning)
             {
@@ -97,15 +96,15 @@ while (running)
                         switch (selectedIndex)
                         {
                             case 0:
-                                chosenSlot = 1;
+                                selectedSaveSlot = 1;
                                 Utility.PromptKey("Save slot 1 chosen");
                                 break;
                             case 2:
-                                chosenSlot = 2;
+                                selectedSaveSlot = 2;
                                 Utility.PromptKey("Save slot 2 chosen");
                                 break;
                             case 3:
-                                chosenSlot = 3;
+                                selectedSaveSlot = 3;
                                 Utility.PromptKey("Save slot 3 chosen");
                                 break;
                         }
@@ -113,7 +112,7 @@ while (running)
                         break;
                 }
             }
-            bool slotExists = DataManager.CheckSaveSlot(chosenSlot);
+            bool slotExists = DataManager.CheckSaveSlot(selectedSaveSlot);
             string[] yesNo = ["Yes", "No"];
             subRunning = true;
             while (subRunning)
