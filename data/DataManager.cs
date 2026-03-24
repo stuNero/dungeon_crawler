@@ -1,5 +1,7 @@
 namespace Game;
 
+using System.Data.Entity.Core.Mapping;
+using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using Game;
 using Microsoft.Data.Sqlite;
@@ -13,19 +15,50 @@ static class DataManager
     {
         Directory.CreateDirectory(DbDir);
     }
-    public static void MakeSaveSlot()
+    public static bool CheckSaveSlot(int newSlot)
     {
+        int dbSlot = 0;
         using (var conn = new SqliteConnection(connString))
         {
             conn.Open();
             var cmd = conn.CreateCommand();
             cmd.CommandText =
             """
-            INSERT INTO Save_Slots (created_at)
-            VALUES (CURRENT_TIMESTAMP);
+            SELECT saveSlotNr FROM SaveSlots WHERE saveSlotNr = @newSlot;
             """;
-            cmd.ExecuteNonQuery();
+            cmd.Parameters.AddWithValue("@newSlot", newSlot);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    dbSlot = reader.GetInt32(0);
+                }
+            }
+
+
+            if (dbSlot == 0)
+            {
+                cmd = conn.CreateCommand();
+                cmd.CommandText =
+                """
+                INSERT INTO SaveSlots (saveSlotNr, created_at)
+                VALUES (@newSlot, CURRENT_TIMESTAMP);
+                """;
+                cmd.Parameters.AddWithValue("@newSlot", newSlot);
+
+                cmd.ExecuteNonQuery();
+                Utility.Success("Creating new Save Slot, please wait...");
+                Thread.Sleep(1000);
+                return false;
+            }
+            else
+            {
+                Utility.Success("Slot exists, loading...");
+                Thread.Sleep(1000);
+                return true;
+            }
         }
+        
     }
     public static List<Player> LoadGlobalClasses()
     {
