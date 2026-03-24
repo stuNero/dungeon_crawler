@@ -59,9 +59,63 @@ while (running)
                 }
             }
             break;
+        
         case Menu.Creation:
+            int chosenSlot = 0;
             subRunning = true;
+            while (subRunning)
+            {
+                Console.Clear();
+                string[] saveSlotsOutput = [
+                    "\n _ _ _\n"+
+                    "|     |\n" +
+                    "|  1  |\n" +
+                    "|_ _ _|\n",
+                    "\n _ _ _\n"+
+                    "|     |\n" +
+                    "|  2  |\n" +
+                    "|_ _ _|\n",
+                    "\n _ _ _\n"+
+                    "|     |\n" +
+                    "|  3  |\n" +
+                    "|_ _ _|\n"];
+                Utility.GenerateMenu("CHOOSE SAVE SLOT ");
+                Utility.GenerateMenuActions(selectedIndex, saveSlotsOutput);
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedIndex--;
+                        if (selectedIndex < 0)
+                            selectedIndex = saveSlotsOutput.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedIndex++;
+                        if (selectedIndex > saveSlotsOutput.Length - 1)
+                            selectedIndex = 0;
+                        break;
+                    case ConsoleKey.Enter:
+                        switch (selectedIndex)
+                        {
+                            case 0:
+                                chosenSlot = 1;
+                                Utility.PromptKey("Save slot 1 chosen");
+                                break;
+                            case 2:
+                                chosenSlot = 2;
+                                Utility.PromptKey("Save slot 2 chosen");
+                                break;
+                            case 3:
+                                chosenSlot = 3;
+                                Utility.PromptKey("Save slot 3 chosen");
+                                break;
+                        }
+                        subRunning = false;
+                        break;
+                }
+            }
+            bool slotExists = DataManager.CheckSaveSlot(chosenSlot);
             string[] yesNo = ["Yes", "No"];
+            subRunning = true;
             while (subRunning)
             {
                 Console.Clear();
@@ -96,10 +150,6 @@ while (running)
             while (subRunning)
             {
                 Console.Clear();
-                foreach (string name in playCharNames)
-                {
-                    Console.WriteLine(name);
-                }
                 Utility.GenerateMenu("Choose your character");
                 Utility.GenerateMenuActions(selectedCharIndex, playCharNames.ToArray());
                 switch (Console.ReadKey().Key)
