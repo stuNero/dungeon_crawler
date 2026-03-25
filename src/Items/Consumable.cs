@@ -1,9 +1,7 @@
 namespace Game;
 
-class Consumable : Item
+class Consumable(string name, double EffectAmount) : Item(name, EffectAmount)
 {
-    public Consumable(string name, double EffectAmount):base(name, EffectAmount)
-    {}
     public override string Info()
     {
         return  $"Name:   [{Name}]\n" +

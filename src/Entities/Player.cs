@@ -9,7 +9,17 @@ using System.Diagnostics;
 /// affects player stats (for example, equipping a <see cref="Weapon"/>
 /// modifies <see cref="Actor.Dmg"/>).
 /// </remarks>
-class Player : Actor
+/// <remarks>
+/// Initializes a new instance of the <see cref="Player"/> class.
+/// </remarks>
+/// <param name="name">Player's display name.</param>
+/// <param name="maxHP">Maximum health points for the player.</param>
+/// <param name="mp">Mana/energy points for the player.</param>
+/// <param name="dmg">Base damage value for the player.</param>
+/// <param name="xp">Starting experience points.</param>
+/// <param name="lvl">Starting level.</param>
+/// <param name="inventorySize">Size of the player's inventory (number of slots).</param>
+class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize) : Actor(id, name, maxHP, mp, dmg, xp, lvl, inventorySize)
 {
     /// <summary>
     /// The currently equipped items. Index mapping:
@@ -17,19 +27,7 @@ class Player : Actor
     /// Elements may be <c>null</c> when the slot is empty.
     /// </summary>
     public Item?[] Equipped = new Item?[3];
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Player"/> class.
-    /// </summary>
-    /// <param name="name">Player's display name.</param>
-    /// <param name="maxHP">Maximum health points for the player.</param>
-    /// <param name="mp">Mana/energy points for the player.</param>
-    /// <param name="dmg">Base damage value for the player.</param>
-    /// <param name="xp">Starting experience points.</param>
-    /// <param name="lvl">Starting level.</param>
-    /// <param name="inventorySize">Size of the player's inventory (number of slots).</param>
-    public Player(int id, string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
-                : base(id, name, maxHP, mp, dmg, xp, lvl, inventorySize)
-    { }
+
     /// <summary>
     /// Shows the player's inventory to the console. When <paramref name="equip"/>
     /// is <c>true</c>, the method will prompt the user to select an item and
@@ -53,16 +51,16 @@ class Player : Actor
             
             while (running)
             {
-                List<string> invOptions = new();
+                List<string> invOptions = [];
                 foreach (Item? item in Inventory)
                 {
                     if (item != null)
                     { invOptions.Add(item.Name);}
                 }
                 if (invOptions.Count == 0) { return;}
-                string[] invOptionsArr = invOptions.ToArray();
+                string[] invOptionsArr = [.. invOptions];
 
-                Dictionary<string, Item> invDict = new();
+                Dictionary<string, Item> invDict = [];
                 for (int i = 0; i < invOptionsArr.Length; ++i)
                 {
                     if (Inventory[i] != null)
@@ -169,16 +167,16 @@ class Player : Actor
 
             while (running)
             {
-                List<string> invOptions = new();
+                List<string> invOptions = [];
                 foreach (Item? item in Equipped)
                 {
                     if (item != null)
                     { invOptions.Add(item.Name); }
                 }
                 if (invOptions.Count == 0) { return; }
-                string[] invOptionsArr = invOptions.ToArray();
+                string[] invOptionsArr = [.. invOptions];
 
-                Dictionary<string, Item> invDict = new();
+                Dictionary<string, Item> invDict = [];
                 for (int i = 0; i < invOptionsArr.Length; ++i)
                 {
                     if (Equipped[i] != null)
@@ -252,18 +250,18 @@ class Player : Actor
     }
     public override void Loot(Entity victim)
     {
-        List<Item> tempItems = new();
+        List<Item> tempItems = [];
         foreach (Item? item in victim.Inventory) { tempItems.Add(item!); }
         int selectedItemIndex = 0;
         bool subRunning = true;
         while (victim.InventoryRange() > 0 && subRunning)
         {
             Console.Clear();
-            List<string> itemList = new();
+            List<string> itemList = [];
             foreach (Item? item in tempItems)
             { if (item != null) { itemList.Add("\n" + item!.Name); } }
 
-            string[] itemArray = itemList.ToArray();
+            string[] itemArray = [.. itemList];
             Utility.GenerateMenu(victim.Name + "s Inventory:");
             Utility.GenerateMenuActions(selectedItemIndex, itemArray);
             Utility.PrintColor("[ESC] - Stop looting", ConsoleColor.DarkGray);
@@ -359,7 +357,7 @@ class Player : Actor
                     }
                 }
             }
-            for (int i = 0; i < Inventory.Count(); i++)
+            for (int i = 0; i < Inventory.Length; i++)
             {
                 if (Inventory[i] == item)
                 {
@@ -383,7 +381,7 @@ class Player : Actor
                     leftOverHP = this.Hp - MaxHP;
                     this.Hp = this.MaxHP;
                 }
-                restoredHP = restoredHP - leftOverHP;
+                restoredHP -= leftOverHP;
                 Equip(item);
                 Utility.Success($"{this.Name} restored {restoredHP}!");
                 break;

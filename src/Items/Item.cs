@@ -1,17 +1,12 @@
 namespace Game;
 
-class Item
+class Item(string name, double effectAmount)
 {
     public int Id { get; set; }
-    public string Name;
-    public double EffectAmount;
-    public int quantity;
-    public Item(string name, double effectAmount)
-    {
-        Name = name;
-        EffectAmount = effectAmount;
-        quantity = 1;
-    }
+    public string Name = name;
+    public double EffectAmount = effectAmount;
+    public int quantity = 1;
+
     public virtual string Info()
     {
         return  $"Name:   [{Name}]\n" +

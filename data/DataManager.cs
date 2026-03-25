@@ -8,9 +8,9 @@ using Microsoft.Data.Sqlite;
 
 static class DataManager
 {
-    static string DbDir = Path.Combine(AppContext.BaseDirectory, "data");
-    static string DbPath = Path.Combine(DbDir, "data.db");
-    static string connString = $"Data Source={DbPath};Mode=ReadWriteCreate";
+    static readonly string DbDir = Path.Combine(AppContext.BaseDirectory, "data");
+    static readonly string DbPath = Path.Combine(DbDir, "data.db");
+    static readonly string connString = $"Data Source={DbPath};Mode=ReadWriteCreate";
     static DataManager()
     {
         Directory.CreateDirectory(DbDir);
@@ -62,7 +62,7 @@ static class DataManager
     }
     public static List<Player> LoadGlobalClasses()
     {
-        List<Player> classes = new List<Player>();
+        List<Player> classes = [];
         using (var conn = new SqliteConnection(connString))
         {
             conn.Open();
@@ -86,7 +86,7 @@ static class DataManager
                     int xp_drop = reader.GetInt32(8);
                     int lvl = reader.GetInt32(9);
                     int inventorySize = reader.GetInt32(10);
-                    Player newClass = new Player(id, name, maxHp, mp, dmg, xp, lvl, inventorySize);
+                    Player newClass = new(id, name, maxHp, mp, dmg, xp, lvl, inventorySize);
                     classes.Add(newClass);
                 }
             }
@@ -95,7 +95,7 @@ static class DataManager
     }
     public static List<Item> LoadGlobalItems()
     {
-        List<Item> items = new List<Item>();
+        List<Item> items = [];
         using (var conn = new SqliteConnection(connString))
         {
             conn.Open();
@@ -119,9 +119,12 @@ static class DataManager
                         double critDamage = reader.GetDouble(6);
                         if (Enum.TryParse<WeaponType>(weaponTypeStr, out var weaponType))
                         {
-                            var weapon = new Weapon(name, effectAmount, weaponType) { Id = id };
-                            weapon.CritChance = critChance;
-                            weapon.CritDamage = critDamage;
+                            var weapon = new Weapon(name, effectAmount, weaponType)
+                            {
+                                Id = id,
+                                CritChance = critChance,
+                                CritDamage = critDamage
+                            };
                             items.Add(weapon);
                         }
                     }
@@ -179,7 +182,7 @@ static class DataManager
             foreach (Item item in player.Inventory)
             {
                 Console.WriteLine("Saving started");
-                Console.WriteLine("Item to save: ", item.Id);
+                Console.WriteLine("Item to save: ", item!.Id);
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@entity_id", player.Id);
                 Console.WriteLine("Saving ", player.Id);

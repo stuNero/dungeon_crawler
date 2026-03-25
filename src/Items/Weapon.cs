@@ -41,7 +41,7 @@ class Weapon : Item
     }
     public double CritCheck(double damage)
     {
-        Random rnd = new Random();
+        Random rnd = new();
         double chance = rnd.NextDouble();
         if (chance <= CritChance)
         {

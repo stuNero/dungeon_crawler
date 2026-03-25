@@ -1,23 +1,19 @@
-﻿using System.ComponentModel.Design;
+﻿using Game;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
-using Game;
 
 Menu currentMenu = Menu.Start;
 bool running = true;
 bool narration = true;
-int selectedIndex = 0;
 int selectedSaveSlot = 0;
 
 Player? player = null;
-Dictionary<int, List<Entity>> entitiesPerSave = new Dictionary<int, List<Entity>>();
 List<Player> playerClasses = DataManager.LoadGlobalClasses();
-List<Entity> entities = new List<Entity>();
+List<Entity> entities = [];
 List<Item> items = DataManager.LoadGlobalItems();
 
 while (running)
 {
+    int selectedIndex = 0;
     try { Console.Clear(); } catch { }
     bool subRunning;
     switch (currentMenu)
@@ -27,9 +23,11 @@ while (running)
             string[] startOptions = ["START", "QUIT"];
 
             selectedIndex = 0;
-            Dictionary<string, Menu> startMenuOptions = new Dictionary<string, Menu>();
-            startMenuOptions.Add(startOptions[0], Menu.Creation);
-            startMenuOptions.Add(startOptions[1], Menu.Quit);
+            Dictionary<string, Menu> startMenuOptions = new()
+            {
+                { startOptions[0], Menu.Creation },
+                { startOptions[1], Menu.Quit }
+            };
 
             while (subRunning)
             {
@@ -59,7 +57,7 @@ while (running)
                 }
             }
             break;
-        
+
         case Menu.Creation:
             subRunning = true;
             while (subRunning)
@@ -112,7 +110,7 @@ while (running)
                         break;
                 }
             }
-            bool slotExists = DataManager.CheckSaveSlot(selectedSaveSlot);
+            DataManager.CheckSaveSlot(selectedSaveSlot);
             string[] yesNo = ["Yes", "No"];
             subRunning = true;
             while (subRunning)
@@ -139,7 +137,7 @@ while (running)
                         break;
                 }
             }
-            List<string> playCharNames = new List<string>();
+            List<string> playCharNames = [];
             foreach (Player pClass in playerClasses)
             {
                 playCharNames.Add(pClass.Name);
@@ -150,7 +148,7 @@ while (running)
             {
                 Console.Clear();
                 Utility.GenerateMenu("Choose your character");
-                Utility.GenerateMenuActions(selectedCharIndex, playCharNames.ToArray());
+                Utility.GenerateMenuActions(selectedCharIndex, [.. playCharNames]);
                 switch (Console.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
@@ -172,7 +170,7 @@ while (running)
                             Utility.GenerateMenu("Are you sure?");
                             Utility.PrintColor(playerClasses[selectedCharIndex].Info(), ConsoleColor.DarkCyan);
                             Utility.GenerateMenuActions(selectedIndex, yesNo);
-                            switch(Console.ReadKey().Key)
+                            switch (Console.ReadKey().Key)
                             {
                                 case ConsoleKey.UpArrow:
                                     selectedIndex--;
@@ -206,19 +204,17 @@ while (running)
                 Utility.Narrate(text: "As you step closer you make out the outlines of an\n" +
                 "old oak chest which materializes from the black, seemingly infinite void room. ");
             }
-            List<Item> tempItems = new();
-            foreach (Item item1 in items) { tempItems.Add(item1); }
-            selectedIndex = 0;
+            List<Item> tempItems = [.. items];
             subRunning = true;
             selectedIndex = 0;
             while (player!.InventoryRange() < 3 && subRunning)
             {
-                List<string> itemList = new();
+                List<string> itemList = [];
                 // Print available items
                 foreach (Item item in tempItems)
                 { itemList.Add("\n" + item.Info()); }
 
-                string[] itemArray = itemList.ToArray();
+                string[] itemArray = [.. itemList];
                 try { Console.Clear(); } catch { }
                 Utility.GenerateMenu(title: $"\nChoose Your Starting Items ({3 - player.InventoryRange()})");
                 Utility.GenerateMenuActions(selectedIndex, itemArray, menuColor: ConsoleColor.DarkMagenta);
@@ -270,9 +266,11 @@ while (running)
             subRunning = true;
             selectedIndex = 0;
             string[] mainOptions = ["Attack enemy WIP", "Character"];
-            Dictionary<string, Menu> menuOptions = new Dictionary<string, Menu>();
-            menuOptions.Add(mainOptions[0], Menu.Battle);
-            menuOptions.Add(mainOptions[1], Menu.Character);
+            Dictionary<string, Menu> menuOptions = new()
+            {
+                { mainOptions[0], Menu.Battle },
+                { mainOptions[1], Menu.Character }
+            };
             while (subRunning)
             {
                 try { Console.Clear(); } catch { }
@@ -333,7 +331,7 @@ while (running)
             break;
         case Menu.Battle:
             Debug.Assert(player != null);
-            foreach (Enemy enemy in entities)
+            foreach (Enemy enemy in entities.Cast<Enemy>())
             {
                 BattleSystem battle = new(player, enemy);
                 currentMenu = battle.BattleLoop();
@@ -347,11 +345,13 @@ while (running)
             try { Console.Clear(); } catch { }
 
             string[] charOptions = ["Take Damage DEBUG", "Inventory", "Equipped", "Stats"];
-            Dictionary<string, CharMenu> charDict = new();
-            charDict.Add(charOptions[0], CharMenu.TakeDamage);
-            charDict.Add(charOptions[1], CharMenu.Inventory);
-            charDict.Add(charOptions[2], CharMenu.Equipped);
-            charDict.Add(charOptions[3], CharMenu.Stats);
+            Dictionary<string, CharMenu> charDict = new()
+            {
+                { charOptions[0], CharMenu.TakeDamage },
+                { charOptions[1], CharMenu.Inventory },
+                { charOptions[2], CharMenu.Equipped },
+                { charOptions[3], CharMenu.Stats }
+            };
             while (subRunning)
             {
                 Console.Clear();
@@ -383,11 +383,11 @@ while (running)
                 {
                     case CharMenu.TakeDamage:
                         try { Console.Clear(); } catch { }
-                        #pragma warning disable CA1416 // Suppress: Console.Beep is only supported on Windows
+#pragma warning disable CA1416 // Suppress: Console.Beep is only supported on Windows
                         player!.TakeDamage(player);
                         Console.Beep(700, 400);
-                        
-                        Utility.PrintColor(player.Info(),ConsoleColor.DarkCyan);
+
+                        Utility.PrintColor(player.Info(), ConsoleColor.DarkCyan);
                         if (!player.Alive)
                         {
                             Utility.PrintColor("You died!", ConsoleColor.DarkRed);
@@ -398,9 +398,9 @@ while (running)
                         break;
                     case CharMenu.Inventory: player!.CheckInventory(equip: true); break;
                     case CharMenu.Equipped: player!.CheckEquipped(unequip: true); break;
-                    case CharMenu.Stats: 
+                    case CharMenu.Stats:
                         Console.Clear();
-                        Utility.PrintColor(player!.Info(), ConsoleColor.DarkCyan); 
+                        Utility.PrintColor(player!.Info(), ConsoleColor.DarkCyan);
                         Utility.PrintColor("Press Any Key to continue", ConsoleColor.DarkGray);
                         Console.ReadKey(true);
                         break;
@@ -439,7 +439,7 @@ while (running)
             }
             break;
         case Menu.GameOver:
-            Utility.PrintColor("--- Y O U  D I E D ---",ConsoleColor.DarkRed);
+            Utility.PrintColor("--- Y O U  D I E D ---", ConsoleColor.DarkRed);
             Console.ReadKey(true);
             break;
         default: break;

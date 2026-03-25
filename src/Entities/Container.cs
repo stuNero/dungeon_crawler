@@ -1,10 +1,5 @@
 namespace Game;
 
-class Container : Entity
+class Container(int id, string name, int hp, int inventorySize) : Entity(id,name, hp, inventorySize)
 {
-    public Container(int id,string name, int hp, int inventorySize)
-            : base(id,name, hp, inventorySize)
-    {
-        
-    }
 }
