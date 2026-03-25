@@ -11,8 +11,8 @@ abstract class Actor : Entity
     public int XpDrop;
     public int Lvl;
 
-    public Actor(int id, string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
-            : base(id, name, maxHP, inventorySize)
+    public Actor(string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize)
+            : base(name, maxHP, inventorySize)
     {
         Mp = mp;
         Dmg = dmg;

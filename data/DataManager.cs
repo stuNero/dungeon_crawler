@@ -1,5 +1,6 @@
 namespace Game;
 
+using System.CodeDom.Compiler;
 using System.Data.Entity.Core.Mapping;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
@@ -58,7 +59,103 @@ static class DataManager
                 return true;
             }
         }
-        
+
+    }
+    public static void Save_SaveEntities(int saveSlot, List<Entity> entities)
+    {
+        using (var conn = new SqliteConnection(connString))
+        {
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            foreach (Entity entity in entities)
+            {
+                cmd.CommandText =
+                """
+                SELECT id FROM Entities WHERE id = @id
+                """;
+                cmd.Parameters.AddWithValue("@id", entity.id);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        if (entity is Player player)
+                        {
+                            SavePlayer(exists: false, player);
+                        }
+                        else if (entity is Enemy enemy)
+                        {
+                            SaveEnemy(exists: false, enemy);
+                        }
+                    }
+                    else
+                    {
+                        if (entity is Player player)
+                        {
+                            SavePlayer(exists: true, player);
+                        }
+                        else if (entity is Enemy enemy)
+                        {
+                            SaveEnemy(exists: true, enemy);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public static List<Entity> LoadSaveEntities(int saveSlot)
+    {
+        List<Entity> saveEntities = [];
+        using (var conn = new SqliteConnection(connString))
+        {
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText =
+            """
+            SELECT * FROM Entities WHERE id = 
+            SELECT entity FROM EntitiesPerSave WHERE saveSlot = @saveSlot;  
+            """;
+            cmd.Parameters.AddWithValue("@saveSlot", saveSlot);
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32(0);
+                    string entity_type = reader.GetString(1);
+                    string name = reader.GetString(2);
+                    bool alive = reader.GetBoolean(3);
+                    double hp = reader.GetDouble(4);
+                    double maxHp = reader.GetDouble(5);
+                    int mp = reader.GetInt32(6);
+                    double dmg = reader.GetDouble(7);
+                    int xp = reader.GetInt32(8);
+                    int lvl = reader.GetInt32(10);
+                    int inventorySize = reader.GetInt32(12);
+                    switch (entity_type)
+                    {
+                        case "player":
+                            Player player = new(name, maxHp, mp, dmg, xp, lvl, inventorySize)
+                            {
+                                id = id,
+                                Hp = hp,
+                                Alive = alive
+                            };
+                            saveEntities.Add(player);
+                            break;
+                        case "enemy":
+                            string enemyType = reader.GetString(11);
+                            Enemy enemy = new(name, maxHp, mp, dmg, xp, lvl, inventorySize, enemyType)
+                            {
+                                id = id,
+                                Hp = hp,
+                                Alive = alive
+                            };
+                            saveEntities.Add(enemy);
+                            break;
+                    }
+                }
+            }
+        }
+        return saveEntities;
     }
     public static List<Player> LoadGlobalClasses()
     {
@@ -73,7 +170,7 @@ static class DataManager
             """;
             using (var reader = cmd.ExecuteReader())
             {
-                while (reader.Read()) 
+                while (reader.Read())
                 {
                     int id = reader.GetInt32(0);
                     string name = reader.GetString(1);
@@ -86,7 +183,7 @@ static class DataManager
                     int xp_drop = reader.GetInt32(8);
                     int lvl = reader.GetInt32(9);
                     int inventorySize = reader.GetInt32(10);
-                    Player newClass = new(id, name, maxHp, mp, dmg, xp, lvl, inventorySize);
+                    Player newClass = new(name, maxHp, mp, dmg, xp, lvl, inventorySize);
                     classes.Add(newClass);
                 }
             }
@@ -138,21 +235,41 @@ static class DataManager
         }
         return items;
     }
-    public static void SavePlayer(int saveslot, Player player)
+    public static void SavePlayer(bool exists, Player player)
     {
         using (var conn = new SqliteConnection(connString))
         {
             conn.Open();
             var cmd = conn.CreateCommand();
-            cmd.CommandText =
-            """
-            INSERT OR IGNORE INTO Entities 
-            (save_slot, entity_type, name, alive, hp, max_hp,dmg,xp,xp_drop,lvl,inventory_size)
-            VALUES
-            (@save_slot, @entity_type, @name, @alive, @hp, @max_hp,@dmg,@xp,@xp_drop,@lvl,@inventory_size)
-            """;
-
-            cmd.Parameters.AddWithValue("@save_slot", saveslot);
+            if (exists)
+            {
+                cmd.CommandText =
+                """
+                UPDATE Entities
+                SET
+                entity_type = @entity_type,
+                name = @name,
+                alive = @alive,
+                hp = @hp,
+                max_hp = @max_hp,
+                dmg = @dmg,
+                xp = @xp,
+                lvl = @lvl,
+                inventory_size = @inventory_size
+                WHERE id = @id;
+                """;
+            }
+            else
+            {
+                cmd.CommandText =
+                """
+                INSERT INTO Entities 
+                (entity_type, name, alive, hp, max_hp, dmg, xp, lvl, inventory_size)
+                VALUES
+                (@entity_type, @name, @alive, @hp, @max_hp, @dmg, @xp, @lvl, @inventory_size)
+                """;
+            }
+            cmd.Parameters.AddWithValue("@id", player.id);
             cmd.Parameters.AddWithValue("@entity_type", "player");
             cmd.Parameters.AddWithValue("@name", player.Name);
             cmd.Parameters.AddWithValue("@alive", player.Alive);
@@ -160,13 +277,63 @@ static class DataManager
             cmd.Parameters.AddWithValue("@max_hp", player.MaxHP);
             cmd.Parameters.AddWithValue("@dmg", player.Dmg);
             cmd.Parameters.AddWithValue("@xp", player.Xp);
-            cmd.Parameters.AddWithValue("@xp_drop", player.XpDrop);
             cmd.Parameters.AddWithValue("@lvl", player.Lvl);
             cmd.Parameters.AddWithValue("@inventory_size", player.InventorySize);
             cmd.ExecuteNonQuery();
         }
+        SaveEntityInventory(player);
     }
-    public static void SavePlayerInventory(Player player)
+    public static void SaveEnemy(bool exists, Enemy enemy)
+    {
+        using (var conn = new SqliteConnection(connString))
+        {
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            if (exists)
+            {
+                cmd.CommandText =
+                """
+                UPDATE Entities
+                SET
+                entity_type = @entity_type,
+                name = @name,
+                alive = @alive,
+                hp = @hp,
+                max_hp = @max_hp,
+                dmg = @dmg,
+                xp = @xp,
+                lvl = @lvl,
+                enemy_type = @enemy_type,
+                inventory_size = @inventory_size
+                WHERE id = @id;
+                """;
+            }
+            else
+            {
+                cmd.CommandText =
+                """
+                INSERT INTO Entities 
+                (entity_type, name, alive, hp, max_hp,dmg,xp,lvl,enemy_type,inventory_size)
+                VALUES
+                (@entity_type, @name, @alive, @hp, @max_hp, @dmg, @xp, @lvl, @enemy_type, @inventory_size)
+                """;
+            }
+            cmd.Parameters.AddWithValue("@id", enemy.id);
+            cmd.Parameters.AddWithValue("@entity_type", "enemy");
+            cmd.Parameters.AddWithValue("@name", enemy.Name);
+            cmd.Parameters.AddWithValue("@alive", enemy.Alive);
+            cmd.Parameters.AddWithValue("@hp", enemy.Hp);
+            cmd.Parameters.AddWithValue("@max_hp", enemy.MaxHP);
+            cmd.Parameters.AddWithValue("@dmg", enemy.Dmg);
+            cmd.Parameters.AddWithValue("@xp", enemy.Xp);
+            cmd.Parameters.AddWithValue("@lvl", enemy.Lvl);
+            cmd.Parameters.AddWithValue("@enemy_type", enemy.Type);
+            cmd.Parameters.AddWithValue("@inventory_size", enemy.InventorySize);
+            cmd.ExecuteNonQuery();
+        }
+        SaveEntityInventory(enemy);
+    }
+    public static void SaveEntityInventory(Entity entity)
     {
         using (var conn = new SqliteConnection(connString))
         {
@@ -179,17 +346,16 @@ static class DataManager
             VALUES
             (@entity_id, @item_id, @quantity)
             """;
-            foreach (Item item in player.Inventory)
+            foreach (Item item in entity.Inventory)
             {
-                Console.WriteLine("Saving started");
-                Console.WriteLine("Item to save: ", item!.Id);
+                if (item == null) { continue; }
+                Console.WriteLine(entity.id);
+                Console.WriteLine(item.Id);
+                Console.ReadKey();
                 cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@entity_id", player.Id);
-                Console.WriteLine("Saving ", player.Id);
+                cmd.Parameters.AddWithValue("@entity_id", entity.id);
                 cmd.Parameters.AddWithValue("@item_id", item.Id);
-                Console.WriteLine("Saving ", item.Id);
                 cmd.Parameters.AddWithValue("@quantity", item.quantity);
-                Console.WriteLine("Saving ended");
                 cmd.ExecuteNonQuery();
             }
         }

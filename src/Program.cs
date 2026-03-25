@@ -207,6 +207,9 @@ while (running)
             List<Item> tempItems = [.. items];
             subRunning = true;
             selectedIndex = 0;
+
+            // Adds temporary test enemy
+            Enemy goblin = new("Goblin Warrior", 10.0, 5, 3, 100, 1, 5, "goblin");
             while (player!.InventoryRange() < 3 && subRunning)
             {
                 List<string> itemList = [];
@@ -241,24 +244,21 @@ while (running)
                         break;
                 }
             }
+            // Adds remaining item pool to enemies
             foreach (Item item in tempItems)
             {
                 if (item == null) continue;
-                foreach (Entity entity in entities)
-                {
-                    entity.AddItem(item);
-                }
+                goblin.AddItem(item);
             }
 
             Console.Clear();
             Utility.GenerateMenu("Your Inventory");
             player.CheckInventory();
-            foreach (Item item in items)
-            {
-                Console.WriteLine(item.Id);
-            }
             Utility.PrintColor("Press Any Key to continue", ConsoleColor.DarkGray);
             Console.ReadKey(true);
+            entities.Add(goblin);
+            entities.Add(player);
+            DataManager.Save_SaveEntities(selectedSaveSlot, entities);
             currentMenu = Menu.Main;
             if (narration) Utility.Narrate("You delve into the depths of the dungeon...");
             break;
@@ -331,7 +331,8 @@ while (running)
             break;
         case Menu.Battle:
             Debug.Assert(player != null);
-            foreach (Enemy enemy in entities.Cast<Enemy>())
+            foreach (Enemy enemy in entities
+            )
             {
                 BattleSystem battle = new(player, enemy);
                 currentMenu = battle.BattleLoop();

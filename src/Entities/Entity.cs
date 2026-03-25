@@ -6,14 +6,14 @@ using System.Security.Cryptography;
 
 abstract class Entity
 {
-    public int Id;
+    public int id;
     public string Name;
     public bool Alive;
     public double Hp;
     public double MaxHP;
     public int InventorySize;
     public Item?[] Inventory;
-    public Entity(int id, string name, double maxHP, int inventorySize)
+    public Entity(string name, double maxHP, int inventorySize)
     {
         Name = name;
         Hp = maxHP;
@@ -63,7 +63,7 @@ abstract class Entity
     public int InventoryRange()
     {
         int amount = 0;
-        for(int i = 0; i<Inventory.Length;++i)
+        for (int i = 0; i < Inventory.Length; ++i)
         {
             if (Inventory[i] != null)
             {
@@ -99,12 +99,12 @@ abstract class Entity
     }
     public void DiscardItem(Item item)
     {
-        for(int i = 0; i<Inventory.Length;++i)
+        for (int i = 0; i < Inventory.Length; ++i)
         {
-            if (item == Inventory[i]) { Inventory[i] = null;}
+            if (item == Inventory[i]) { Inventory[i] = null; }
         }
     }
-    public virtual void Loot(Entity victim) {}
+    public virtual void Loot(Entity victim) { }
     public void TakeDamage(Entity enemy)
     {
         double dmg = 0;
@@ -166,8 +166,8 @@ abstract class Entity
                             opponent.TakeDamage(this);
                             subRunning = false;
                         }
-                        else if (battleOptions[selectedIndex] == "Pass") 
-                        {subRunning = false;}
+                        else if (battleOptions[selectedIndex] == "Pass")
+                        { subRunning = false; }
                         break;
                 }
             }

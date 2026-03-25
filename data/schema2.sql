@@ -12,9 +12,9 @@ CREATE TABLE Entities (
     max_hp REAL NOT NULL,
     dmg REAL NOT NULL,
     xp INTEGER NOT NULL,
-    xp_drop INTEGER NOT NULL,
+    xp_drop INTEGER,
     lvl INTEGER NOT NULL,
-    enemy_type INTEGER NULL,      -- Only used if entity_type = 'enemy'
+    enemy_type TEXT NULL,      -- Only used if entity_type = 'enemy'
     inventory_size INTEGER NOT NULL
 );
 ---------------------------------------------------

@@ -1,4 +1,5 @@
 namespace Game;
+
 using System.Diagnostics;
 /// <summary>
 /// Represents the player-controlled <see cref="Actor"/>.
@@ -19,13 +20,14 @@ using System.Diagnostics;
 /// <param name="xp">Starting experience points.</param>
 /// <param name="lvl">Starting level.</param>
 /// <param name="inventorySize">Size of the player's inventory (number of slots).</param>
-class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize) : Actor(id, name, maxHP, mp, dmg, xp, lvl, inventorySize)
+class Player(string name, double maxHP, int mp, double dmg, int xp, int lvl, int inventorySize) : Actor(name, maxHP, mp, dmg, xp, lvl, inventorySize)
 {
     /// <summary>
     /// The currently equipped items. Index mapping:
     /// [0] Primary weapon, [1] Off-hand, [2] Consumable.
     /// Elements may be <c>null</c> when the slot is empty.
     /// </summary>
+    public int id;
     public Item?[] Equipped = new Item?[3];
 
     /// <summary>
@@ -36,7 +38,7 @@ class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int 
     /// <param name="equip">If <c>true</c>, allow selecting and equipping an item; otherwise only display inventory.</param>
     public override string Info()
     {
-        string txt = 
+        string txt =
         $"\nInventory Slots: [{InventorySize}]\n___________________";
 
         return base.Info() + txt;
@@ -48,16 +50,16 @@ class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int 
         {
             bool running = true;
             int selectedItemIndex = 0;
-            
+
             while (running)
             {
                 List<string> invOptions = [];
                 foreach (Item? item in Inventory)
                 {
                     if (item != null)
-                    { invOptions.Add(item.Name);}
+                    { invOptions.Add(item.Name); }
                 }
-                if (invOptions.Count == 0) { return;}
+                if (invOptions.Count == 0) { return; }
                 string[] invOptionsArr = [.. invOptions];
 
                 Dictionary<string, Item> invDict = [];
@@ -81,22 +83,22 @@ class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int 
                         break;
                     case ConsoleKey.DownArrow:
                         selectedItemIndex++;
-                        if (selectedItemIndex > invOptionsArr.Length-1)
+                        if (selectedItemIndex > invOptionsArr.Length - 1)
                             selectedItemIndex = 0;
                         break;
                     case ConsoleKey.Enter:
-                        Debug.Assert(Inventory[selectedItemIndex] != null); 
+                        Debug.Assert(Inventory[selectedItemIndex] != null);
                         try { Console.Clear(); } catch { }
                         Console.WriteLine(this.Inventory[selectedItemIndex]!.Info());
 
                         bool subRunning = true;
                         int selectedIndex = 0;
-                        string[] yesNo= ["Yes", "No"];
+                        string[] yesNo = ["Yes", "No"];
                         while (subRunning)
                         {
                             Console.Clear();
                             Utility.GenerateMenu("Equip " + this.Inventory[selectedItemIndex]!.Name + "?");
-                            Utility.PrintColor(Inventory[selectedItemIndex]!.Info() + "\n",ConsoleColor.DarkGreen);
+                            Utility.PrintColor(Inventory[selectedItemIndex]!.Info() + "\n", ConsoleColor.DarkGreen);
                             Utility.GenerateMenuActions(selectedIndex, yesNo);
                             switch (Console.ReadKey(true).Key)
                             {
@@ -321,7 +323,7 @@ class Player(int id, string name, double maxHP, int mp, double dmg, int xp, int 
                 }
             }
         }
-        if(item is Weapon)
+        if (item is Weapon)
         {
             UnEquip(item);
             this.Dmg -= item.EffectAmount;
