@@ -444,16 +444,18 @@ static class DataManager
             VALUES
             (@entity_id, @item_id, @quantity)
             """;
-            foreach (Item item in entity.Inventory)
+
+            for (int i = 0; i < entity.Inventory.Length; i++)
             {
-                if (item == null) { continue; }
+                if (entity.Inventory[i] != null)
+                { continue; }
                 Console.WriteLine(entity.id);
-                Console.WriteLine(item.Id);
+                Console.WriteLine(entity.Inventory[i]!.Id);
                 Console.ReadKey();
                 cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@entity_id", entity.id);
-                cmd.Parameters.AddWithValue("@item_id", item.Id);
-                cmd.Parameters.AddWithValue("@quantity", item.quantity);
+                cmd.Parameters.AddWithValue("@item_id", entity.Inventory[i]!.Id);
+                cmd.Parameters.AddWithValue("@quantity", entity.Inventory[i]!.quantity);
                 cmd.ExecuteNonQuery();
             }
         }
