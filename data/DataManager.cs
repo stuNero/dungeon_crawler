@@ -12,9 +12,105 @@ static class DataManager
     static readonly string DbDir = Path.Combine(AppContext.BaseDirectory, "data");
     static readonly string DbPath = Path.Combine(DbDir, "data.db");
     static readonly string connString = $"Data Source={DbPath};Mode=ReadWriteCreate";
+
     static DataManager()
     {
         Directory.CreateDirectory(DbDir);
+
+        InitiateDatabase();
+    }
+    public static void InitiateDatabase()
+    {
+        using (var conn = new SqliteConnection(connString))
+        {
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            // SCHEMA:
+            cmd.CommandText =
+            """
+            PRAGMA foreign_keys = ON;
+            ---------------------------------------------------
+            -- ENTITIES (Players and Enemies)
+            ---------------------------------------------------
+            CREATE TABLE IF NOT EXISTS Entities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_type TEXT NOT NULL,    -- 'player' or 'enemy'
+                name TEXT NOT NULL,
+                alive BOOLEAN NOT NULL,
+                hp REAL NOT NULL,
+                max_hp REAL NOT NULL,
+                dmg REAL NOT NULL,
+                xp INTEGER NOT NULL,
+                xp_drop INTEGER,
+                lvl INTEGER NOT NULL,
+                enemy_type TEXT NULL,      -- Only used if entity_type = 'enemy'
+                inventory_size INTEGER NOT NULL
+            );
+            ---------------------------------------------------
+            -- ITEMS (Weapons, consumables, etc.)
+            ---------------------------------------------------
+            CREATE TABLE IF NOT EXISTS Items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                item_type TEXT NOT NULL,      -- 'weapon', 'consumable', etc.
+                name TEXT NOT NULL,
+                effect_amount REAL NOT NULL,
+                weapon_type TEXT NULL,        -- Sword / Axe / etc
+                crit_chance REAL NULL,
+                crit_damage REAL NULL,
+                UNIQUE(name)
+            );
+
+            ---------------------------------------------------
+            -- INVENTORY (Many-to-Many: entity → items)
+            ---------------------------------------------------
+            CREATE TABLE IF NOT EXISTS Inventories (
+                entity INTEGER NOT NULL REFERENCES Entities(id),
+                item INTEGER NOT NULL REFERENCES Items(id),
+                quantity INTEGER NOT NULL DEFAULT 1,
+                PRIMARY KEY (entity, item)
+            );
+
+            ---------------------------------------------------
+            -- EQUIPPED ITEMS (Equipment slots)
+            ---------------------------------------------------
+            CREATE TABLE IF NOT EXISTS EquippedInventories (
+                entity_id INTEGER NOT NULL REFERENCES Entities(id),
+                slot INTEGER NOT NULL,           -- 'weapon', 'armor', etc.
+                item_id INTEGER NOT NULL REFERENCES Items(id),
+                PRIMARY KEY (entity_id, slot)
+            );
+
+            ---------------------------------------------------
+            -- SAVE SLOTS
+            ---------------------------------------------------
+            CREATE TABLE IF NOT EXISTS SaveSlots (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_at TEXT DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS PlayerClasses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                alive BOOLEAN NOT NULL,
+                hp REAL NOT NULL,
+                mp REAL NOT NULL,
+                max_hp REAL NOT NULL,
+                dmg REAL NOT NULL,
+                xp INTEGER NOT NULL,
+                xp_drop INTEGER NOT NULL,
+                lvl INTEGER NOT NULL,
+                inventory_size INTEGER NOT NULL,
+                UNIQUE (name)
+            );
+
+            CREATE TABLE IF NOT EXISTS EntitiesPerSave (
+                entity INTEGER NOT NULL REFERENCES Entities(id),
+                saveSlot INTEGER NOT NULL REFERENCES SaveSlots(id),
+                UNIQUE (entity, saveSlot)
+            );
+            """;
+            cmd.ExecuteNonQuery();
+        }
     }
     public static bool CheckSaveSlot(int newSlot)
     {
@@ -339,6 +435,8 @@ static class DataManager
         {
             conn.Open();
             var cmd = conn.CreateCommand();
+            // Failed foreign key restraint on entity_id
+            // entity_id = 0 when test enemy loads
             cmd.CommandText =
             """
             INSERT OR IGNORE INTO Inventories 
@@ -359,96 +457,5 @@ static class DataManager
                 cmd.ExecuteNonQuery();
             }
         }
-    }
-    public static void SaveItem(Item item)
-    {
-        int itemId = -1;
-        using (var conn = new SqliteConnection(connString))
-        {
-            if (item is Weapon)
-            {
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText =
-                """
-                INSERT OR IGNORE INTO Items (item_type, name, effect_amount, weapon_type, crit_chance, crit_damage)
-                VALUES (@item_type, @name, @effect_amount, @weapon_type, @crit_chance, @crit_damage);
-                SELECT last_insert_rowid();
-                """;
-                cmd.Parameters.AddWithValue("@name", item.Name);
-                cmd.Parameters.AddWithValue("@effect_amount", item.EffectAmount);
-                cmd.Parameters.AddWithValue("@item_type", "weapon");
-                cmd.Parameters.AddWithValue("@weapon_type", ((Weapon)item).Type.ToString());
-                cmd.Parameters.AddWithValue("@crit_chance", ((Weapon)item).CritChance);
-                cmd.Parameters.AddWithValue("@crit_damage", ((Weapon)item).CritDamage);
-                var rows = cmd.ExecuteNonQuery();
-
-                if (rows == 1)
-                {
-                    cmd.CommandText = "SELECT last_insert_rowid();";
-                    item.Id = Convert.ToInt32(cmd.ExecuteScalar());
-                }
-                //else
-                //{
-                //    // insert failed or was ignored
-                //    item.Id = -1; // or handle explicitly
-                //}
-                conn.Close();
-            }
-            else if (item is Consumable)
-            {
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText =
-                """
-                INSERT OR IGNORE INTO Items (item_type, name, effect_amount)
-                VALUES (@item_type, @name, @effect_amount);
-                SELECT last_insert_rowid();
-                """;
-                cmd.Parameters.AddWithValue("@name", item.Name);
-                cmd.Parameters.AddWithValue("@effect_amount", item.EffectAmount);
-                cmd.Parameters.AddWithValue("@item_type", "consumable");
-                var rows = cmd.ExecuteNonQuery();
-
-                if (rows == 1)
-                {
-                    cmd.CommandText = "SELECT last_insert_rowid();";
-                    item.Id = Convert.ToInt32(cmd.ExecuteScalar());
-                }
-                conn.Close();
-            }
-            item.Id = itemId;
-        }
-    }
-    public static Player LoadPlayer(int saveslot, Player player)
-    {
-        using (var conn = new SqliteConnection(connString))
-        {
-            conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText =
-            """
-            SELECT name, alive, hp, max_hp, dmg, xp, xp_drop, lvl, inventory_size
-            FROM Entities
-            WHERE save_slot = @save_slot AND entity_type = 'player'
-            """;
-            cmd.Parameters.AddWithValue("@save_slot", saveslot);
-            using (var reader = cmd.ExecuteReader())
-            {
-                if (reader.Read())
-                {
-                    player.Name = reader.GetString(0);
-                    player.Alive = reader.GetBoolean(1);
-                    player.Hp = reader.GetInt32(2);
-                    player.MaxHP = reader.GetInt32(3);
-                    player.Dmg = reader.GetInt32(4);
-                    player.Xp = reader.GetInt32(5);
-                    player.XpDrop = reader.GetInt32(6);
-                    player.Lvl = reader.GetInt32(7);
-                    player.InventorySize = reader.GetInt32(8);
-                }
-            }
-        }
-        return player;
     }
 }
