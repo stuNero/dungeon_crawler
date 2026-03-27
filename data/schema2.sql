@@ -35,10 +35,10 @@ CREATE TABLE Items (
 -- INVENTORY (Many-to-Many: entity → items)
 ---------------------------------------------------
 CREATE TABLE Inventories (
-    entity_id INTEGER NOT NULL REFERENCES Entities(id),
-    item_id INTEGER NOT NULL REFERENCES Items(id),
+    entity INTEGER NOT NULL REFERENCES Entities(id),
+    item INTEGER NOT NULL REFERENCES Items(id),
     quantity INTEGER NOT NULL DEFAULT 1,
-    PRIMARY KEY (entity_id, item_id)
+    PRIMARY KEY (entity, item)
 );
 
 ---------------------------------------------------
@@ -76,6 +76,6 @@ CREATE TABLE PlayerClasses (
 
 CREATE TABLE EntitiesPerSave (
     entity INTEGER NOT NULL REFERENCES Entities(id),
-    slot INTEGER NOT NULL REFERENCES SaveSlots(id),
-    UNIQUE (entity, slot)
+    saveSlot INTEGER NOT NULL REFERENCES SaveSlots(id),
+    UNIQUE (entity, saveSlot)
 );
